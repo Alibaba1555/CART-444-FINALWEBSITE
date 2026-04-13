@@ -57,7 +57,7 @@ header {
   pointer-events: none;
 }
 .logo {
-  font-size: 12px;
+  font-size: 16px;
   letter-spacing: .28em;
   text-transform: uppercase;
   color: var(--cream);
@@ -66,7 +66,7 @@ header {
 }
 nav { display: flex; gap: 44px; pointer-events: all; }
 nav a {
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--cream);
@@ -106,7 +106,7 @@ nav a:hover { opacity: .85; }
   top: calc(50% + clamp(46px, 7vw, 100px));
   left: 50%;
   transform: translateX(-50%);
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: .42em;
   text-transform: uppercase;
   color: var(--cream);
@@ -142,7 +142,7 @@ nav a:hover { opacity: .85; }
   position: fixed;
   bottom: 38px; left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: .38em;
   text-transform: uppercase;
   color: var(--cream);
@@ -194,7 +194,7 @@ nav a:hover { opacity: .85; }
 }
 .blob-num {
   display: block;
-  font-size: 40px;
+  font-size: 52px;
   font-style: italic;
   font-weight: 300;
   color: var(--cream);
@@ -204,7 +204,7 @@ nav a:hover { opacity: .85; }
 }
 .blob-label {
   display: block;
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: .32em;
   text-transform: uppercase;
   color: var(--cream);
@@ -254,22 +254,36 @@ nav a:hover { opacity: .85; }
   pointer-events: all;
   opacity: 1;
 }
-.panel-bg {
-  position: absolute; inset: 0;
-  background: var(--ink);
-  transform: translateY(102%);
-  transition: transform .82s cubic-bezier(.76,0,.24,1);
+/* ─── Colour flood ───────────────────────────────────────────
+   Radial reveal from the exact point where the blob disappeared.
+   clip-path: circle() expands/contracts under JS-controlled transitions.
+   No CSS transition here — easing differs for open vs close. */
+#color-flood {
+  position: fixed;
+  inset: 0;
+  z-index: 480;
+  pointer-events: none;
+  clip-path: circle(0% at 50% 0%);
+  /* transition applied inline by JS */
 }
-.panel.active .panel-bg { transform: translateY(0); }
+
+/* panel-bg is now a static solid background for the scrollable content.
+   No animation — the flood element handles the reveal. */
+.panel-bg {
+  position: absolute;
+  inset: 0;
+  /* colour set dynamically by JS (same as flood) */
+}
 
 /* Colour strip at very top */
 .panel-strip {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
+  height: 3px;
   transform-origin: left;
   transform: scaleX(0);
-  transition: transform .75s .45s ease;
+  transition: transform .85s .30s cubic-bezier(.22,1,.36,1);
+  z-index: 2;
 }
 .panel.active .panel-strip { transform: scaleX(1); }
 
@@ -280,7 +294,7 @@ nav a:hover { opacity: .85; }
   background: none; border: none;
   color: var(--cream);
   font-family: 'Cormorant Garamond', serif;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: .28em;
   text-transform: uppercase;
   cursor: none;
@@ -319,7 +333,7 @@ nav a:hover { opacity: .85; }
   flex-shrink: 0;
 }
 .panel-title {
-  font-size: clamp(60px, 8vw, 108px);
+  font-size: clamp(76px, 9.5vw, 136px);
   font-weight: 300;
   letter-spacing: -.025em;
   line-height: .9;
@@ -337,13 +351,13 @@ nav a:hover { opacity: .85; }
 }
 .panel.active .panel-meta { opacity: 1; transform: translateY(0); }
 .panel-meta-count {
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: .28em;
   text-transform: uppercase;
   opacity: .35;
 }
 .panel-meta-year {
-  font-size: 30px;
+  font-size: 40px;
   font-style: italic;
   font-weight: 300;
   opacity: .18;
@@ -393,7 +407,7 @@ nav a:hover { opacity: .85; }
   user-select: none;
 }
 .work-card-title {
-  font-size: 17px;
+  font-size: 22px;
   font-style: italic;
   color: var(--cream);
   opacity: .6;
@@ -401,7 +415,7 @@ nav a:hover { opacity: .85; }
   line-height: 1.3;
 }
 .work-card-year {
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: .22em;
   color: var(--cream);
   opacity: .22;

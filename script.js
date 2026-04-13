@@ -119,89 +119,176 @@ let activeBlob   = null;
 //   base position. We capture the visual Y offset first, then add it as
 //   the JS animation's starting translate so the blob stays in place.
 
+// Stores flight params so the return animation knows where to fall back to
+let lastFlight = null;
+
 function flyBlob(blob) {
   const id = blob.id;
   const bd = BD[id];
   const pathEl = blob.querySelector('path');
 
-  // 1. Record VISUAL position before touching anything
   const rectBefore = blob.getBoundingClientRect();
 
-  // 2. Kill CSS animation (blob snaps to base position).
-  //    CRITICAL: set opacity:1 BEFORE killing animation — the blob HTML has
-  //    opacity:0 inline, and blob-enter's `forwards` fill-mode was the only
-  //    thing keeping it visible. Killing animation reverts to the inline 0.
+  // Lock opacity before killing animation — blob HTML has opacity:0 inline,
+  // and blob-enter's `forwards` was the only thing keeping it at 1.
   blob.classList.add('flying-js');
   blob.style.opacity = '1';
   blob.style.animation = 'none';
-  void blob.offsetHeight; // force layout reflow
+  void blob.offsetHeight;
 
-  // 3. Record snapped position, compute float offset we just lost
-  const rectSnap = blob.getBoundingClientRect();
-  const floatDy  = rectBefore.top - rectSnap.top; // e.g. −7px if float pushed it up
-
-  // 4. Total upward travel: current visual top + half height + overshoot
-  //    so the blob fully exits the viewport before splat
-  const DURATION    = 1600;
+  const rectSnap   = blob.getBoundingClientRect();
+  const floatDy    = rectBefore.top - rectSnap.top;
+  const DURATION   = 1600;
   const totalTravel = rectBefore.top + rectBefore.height / 2 + 120;
+
+  // Remember for return journey
+  lastFlight = { id, floatDy, totalTravel };
+
+  // ── Paint the panel with the blob's colour BEFORE it slides up ──
+  const color = blob.dataset.color;
+  const n = parseInt(color.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+
+  // Compute blob's horizontal center as % of viewport
+  // (flood origin = exact point where blob disappeared)
+  const blobCenterX = Math.round(
+    (rectBefore.left + rectBefore.width / 2) / window.innerWidth * 100
+  );
+
+  // Dark tinted background: 35% blob colour + 65% ink (#050400)
+  const nr = Math.round(r * .35 + 5 * .65);
+  const ng = Math.round(g * .35 + 4 * .65);
+  const nb = Math.round(b * .35 + 0 * .65);
+  const darkColor = `rgb(${nr},${ng},${nb})`;
+
+  const colorFlood = document.getElementById('color-flood');
+  // Position flood at blob's center, fully hidden — no transition yet
+  colorFlood.style.transition = 'none';
+  colorFlood.style.clipPath   = `circle(0% at ${blobCenterX}% 0%)`;
+  colorFlood.style.background = darkColor;
+  document.getElementById('panel-bg').style.background = darkColor;
+  panelStrip.style.background = color;
+
+  lastFlight.blobCenterX = blobCenterX;
 
   const eIO  = t => t < .5 ? 2*t*t : -1+(4-2*t)*t;
   const eOut = t => 1 - (1-t) * (1-t);
   const eIn  = t => t * t;
-
   const start = performance.now();
 
   function frame(now) {
     const prog = Math.min((now - start) / DURATION, 1);
-    const tSec = (now - start) / 1000; // seconds, for noise continuity
+    const tSec = (now - start) / 1000;
 
-    // ── Movement: translateY from floatDy (start) to -(totalTravel) (top) ──
-    const travel = floatDy - eIO(prog) * totalTravel;
-    blob.style.transform = `translateY(${travel}px)`;
+    blob.style.transform = `translateY(${floatDy - eIO(prog) * totalTravel}px)`;
+    if (prog > .86) blob.style.opacity = String(1 - (prog - .86) / .14);
 
-    // ── Opacity: fade out during dissolve phase ──
-    if (prog > .86) {
-      blob.style.opacity = String(1 - (prog - .86) / .14);
-    }
-
-    // ── Shape: interpolate scaleX/scaleY based on phase ──
     let sx, sy;
     if (prog < .06) {
-      const q = Math.sin((prog / .06) * Math.PI); // rises then falls → one pulse
-      sx = 1 + q * .14;    // brief belly-out
-      sy = 1 - q * .11;
+      const q = Math.sin((prog / .06) * Math.PI);
+      sx = 1 + q * .14; sy = 1 - q * .11;
     } else if (prog < .68) {
       const q = eOut((prog - .06) / .62);
-      sx = 1 - q * .25;    // narrow as it rises
-      sy = 1 + q * .32;    // tall
+      sx = 1 - q * .25; sy = 1 + q * .32;
     } else if (prog < .78) {
       const q = eIn((prog - .68) / .10);
-      sx = 0.75 + q * 2.0; // 0.75 → 2.75
-      sy = 1.32 - q * 1.20; // 1.32 → 0.12
+      sx = 0.75 + q * 2.0; sy = 1.32 - q * 1.20;
     } else if (prog < .86) {
       const q = eOut((prog - .78) / .08);
-      sx = 2.75 - q * 1.25; // 2.75 → 1.5
-      sy = 0.12 + q * .38;  // 0.12 → 0.50
+      sx = 2.75 - q * 1.25; sy = 0.12 + q * .38;
     } else {
       const q = (prog - .86) / .14;
-      sx = 1.5  + q * 1.5;  // 1.5 → 3.0
-      sy = 0.50 - q * .49;  // 0.50 → 0.01
+      sx = 1.5 + q * 1.5; sy = 0.50 - q * .49;
     }
 
-    const pts = blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 8, sx, sy);
-    pathEl.setAttribute('d', smoothPath(pts));
-
+    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 8, sx, sy)));
     if (prog < 1) {
       requestAnimationFrame(frame);
     } else {
+      // Blob fully invisible — fire the radial flood from that exact point
       blob.style.visibility = 'hidden';
+      void colorFlood.offsetHeight; // flush any pending style before transition
+      // Expand: fast initial burst, decelerates as it fills edges
+      colorFlood.style.transition = 'clip-path .80s cubic-bezier(0.15, 0.5, 0.35, 1)';
+      colorFlood.style.clipPath   = `circle(150% at ${blobCenterX}% 0%)`;
+      // Panel content fades in 130ms into the expansion
+      setTimeout(() => panel.classList.add('active'), 130);
     }
   }
 
   requestAnimationFrame(frame);
+}
 
-  // Panel rises after impact (prog ≈ 0.78)
-  setTimeout(() => panel.classList.add('active'), DURATION * .80);
+// ── Return drop animation (time-reversal of fly) ──────────────
+// Phases:
+//   0.00–0.12  Condense out of ceiling: flat splat → elongated column
+//   0.12–0.82  Fall back down: column → circular (gravity pull)
+//   0.82–0.92  Landing squish: brief belly-out on impact
+//   0.92–1.00  Settle to idle
+function returnBlob(blob) {
+  const id = blob.id;
+  const bd = BD[id];
+  const pathEl = blob.querySelector('path');
+  const { floatDy, totalTravel } = lastFlight;
+
+  const DURATION = 1500;
+  const eOut3 = t => 1 - Math.pow(1 - t, 3); // ease-out cubic (gentle fall)
+  const eOut  = t => 1 - (1-t) * (1-t);
+  const start = performance.now();
+
+  blob.style.visibility = '';
+  blob.style.opacity = '0';
+  // Start at the same "dissolved" position: spread flat at top
+  blob.style.transform = `translateY(${floatDy - totalTravel}px)`;
+
+  function frame(now) {
+    const prog = Math.min((now - start) / DURATION, 1);
+    const tSec = (now - start) / 1000;
+
+    // ── Fall back: from top to original position ──
+    // eOut3 gives a slight acceleration (like gravity) then ease at landing
+    const travel = floatDy - (1 - eOut3(prog)) * totalTravel;
+    blob.style.transform = `translateY(${travel}px)`;
+
+    // ── Fade in during condensation phase ──
+    if (prog < .18) blob.style.opacity = String(prog / .18);
+    else            blob.style.opacity = '1';
+
+    // ── Shape: reverse of fly ──
+    let sx, sy;
+    if (prog < .12) {
+      // Condense from flat ceiling splat back into elongated column
+      const q = eOut(prog / .12);
+      sx = 3.0 - q * 2.25;  // 3.0 → 0.75
+      sy = 0.01 + q * 1.31; // 0.01 → 1.32
+    } else if (prog < .82) {
+      // Column falls and rounds out into circle
+      const q = eOut3((prog - .12) / .70);
+      sx = 0.75 + q * .25; // 0.75 → 1.0
+      sy = 1.32 - q * .32; // 1.32 → 1.0
+    } else if (prog < .92) {
+      // Landing squish: brief outward belly as it hits its rest position
+      const q = Math.sin(((prog - .82) / .10) * Math.PI);
+      sx = 1 + q * .13;
+      sy = 1 - q * .10;
+    } else {
+      sx = 1; sy = 1;
+    }
+
+    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 20, sx, sy)));
+
+    if (prog < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      // Hand off to CSS float + idleMorph
+      blob.style.transform = '';
+      blob.style.opacity   = '';
+      blob.style.animation = FLOAT_ANIM[id];
+      blob.classList.remove('flying-js');
+    }
+  }
+
+  requestAnimationFrame(frame);
 }
 
 // ── Blob click ────────────────────────────────────────────────
@@ -212,7 +299,6 @@ document.querySelectorAll('.blob').forEach(blob => {
 
     panelTitle.textContent = blob.dataset.category;
     panelCount.textContent = String(JSON.parse(blob.dataset.works).length).padStart(2,'0') + ' Works';
-    panelStrip.style.background = blob.dataset.color;
     worksGrid.innerHTML = JSON.parse(blob.dataset.works).map((w, i) => `
       <div class="work-card">
         <div class="work-card-ghost">${String(i+1).padStart(2,'0')}</div>
@@ -226,21 +312,26 @@ document.querySelectorAll('.blob').forEach(blob => {
 
 // ── Close panel ───────────────────────────────────────────────
 closeBtn.addEventListener('click', () => {
+  const blob = activeBlob;
+  activeBlob = null;
+  const { blobCenterX } = lastFlight;
+  const colorFlood = document.getElementById('color-flood');
+
+  // 1. Fade out panel content
   panel.classList.remove('active');
+
+  // 2. Colour retreats radially back toward the original blob impact point.
+  //    Easing: accelerates inward (ease-in feel), giving a "sucked back" quality.
   setTimeout(() => {
-    if (!activeBlob) return;
-    const id  = activeBlob.id;
-    const bd  = BD[id];
-    // Restore to neutral circle so idleMorph takes over cleanly
-    activeBlob.querySelector('path').setAttribute('d',
-      smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], 0)));
-    activeBlob.style.visibility = '';
-    activeBlob.style.transform  = '';
-    activeBlob.style.opacity    = '';
-    activeBlob.style.animation  = FLOAT_ANIM[id];
-    activeBlob.classList.remove('flying-js');
-    activeBlob = null;
-  }, 900);
+    colorFlood.style.transition = 'clip-path .72s cubic-bezier(0.65, 0, 0.9, 0.5)';
+    colorFlood.style.clipPath   = `circle(0% at ${blobCenterX}% 0%)`;
+  }, 280);
+
+  // 3. Blob starts condensing and falling just as the colour fully converges —
+  //    looks like the colour crystallises back into the droplet.
+  setTimeout(() => {
+    returnBlob(blob);
+  }, 820);
 });
 
 closeBtn.addEventListener('mouseenter', () => { ring.style.width = '50px'; ring.style.height = '50px'; });
