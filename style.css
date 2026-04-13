@@ -80,7 +80,7 @@ nav a:hover { opacity: .85; }
 .scene {
   position: relative;
   width: 100vw; height: 100vh;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Background watermark */
@@ -171,41 +171,18 @@ nav a:hover { opacity: .85; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform .55s cubic-bezier(.34,1.56,.64,1);
-  will-change: transform;
-  transform-origin: center center;
-  animation: water-sway 5.2s ease-in-out infinite;
 }
 
-@keyframes water-sway {
-  0%, 100% {
-    transform: rotate(0deg) translateX(0);
-  }
-  20% {
-    transform: rotate(0.8deg) translateX(2px);
-  }
-  40% {
-    transform: rotate(-1.1deg) translateX(-3px);
-  }
-  60% {
-    transform: rotate(0.6deg) translateX(2px);
-  }
-  80% {
-    transform: rotate(-0.5deg) translateX(-1px);
-  }
-}
-
-.blob:hover .blob-shape {
-  animation-duration: 2.6s;
-  filter: brightness(1.04);
-}
-.blob:hover svg {
-  transform: scale(1.05) translateY(-7px);
-  transition: transform .55s cubic-bezier(.34,1.56,.64,1);
-}
+/* SVG overflow:visible lets the squash splat extend beyond viewBox bounds */
 .blob-shape svg {
-  transition: transform .55s cubic-bezier(.34,1.56,.64,1);
-  transform-origin: center center;
+  overflow: visible;
+  display: block;
+}
+
+/* Hover: brightness lift only — all shape changes handled by JS */
+.blob:hover .blob-shape svg {
+  filter: brightness(1.09);
+  transition: filter .35s ease;
 }
 
 /* Text inside blob */
@@ -238,7 +215,7 @@ nav a:hover { opacity: .85; }
 .blob:hover .blob-num   { opacity: 0; }
 .blob:hover .blob-label { opacity: .75; }
 
-/* Float animations */
+/* Float animations (position drift; shape morph handled by JS) */
 @keyframes fa {
   0%,100% { transform: translateY(0) rotate(0deg); }
   32%     { transform: translateY(-13px) rotate(1.1deg); }
@@ -264,74 +241,6 @@ nav a:hover { opacity: .85; }
 @keyframes blob-enter {
   from { opacity: 0; transform: translateY(28px) scale(.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ─── Liquid rise / droplet embed animation ─── */
-@keyframes liquid-embed {
-  0% {
-    transform: translateY(0) translateX(0) scale(1, 1);
-    opacity: 1;
-    filter: blur(0px);
-  }
-
-  /* 起跳前先轻微下压，像液体蓄力 */
-  8% {
-    transform: translateY(8px) translateX(0) scale(1.08, 0.92);
-    opacity: 1;
-  }
-
-  /* 向上被吸走，先拉长 */
-  20% {
-    transform: translateY(-38px) translateX(-4px) scale(0.9, 1.16);
-    opacity: 1;
-  }
-
-  /* 中途左右摇晃，像水滴上升 */
-  34% {
-    transform: translateY(-20vh) translateX(10px) rotate(2deg) scale(0.95, 1.08);
-    opacity: 1;
-  }
-
-  48% {
-    transform: translateY(-42vh) translateX(-12px) rotate(-2.5deg) scale(1.02, 0.96);
-    opacity: 1;
-  }
-
-  62% {
-    transform: translateY(-68vh) translateX(8px) rotate(1.5deg) scale(0.96, 1.04);
-    opacity: 1;
-  }
-
-  /* 冲到顶部，稍微“嵌进去” */
-  78% {
-    transform: translateY(-96vh) translateX(-5px) rotate(-1deg) scale(1.05, 0.88);
-    opacity: 0.98;
-  }
-
-  /* 撞到顶部后的回弹 */
-  86% {
-    transform: translateY(-88vh) translateX(4px) rotate(0.8deg) scale(0.94, 1.05);
-    opacity: 0.98;
-  }
-
-  /* 再次回到顶部并部分嵌入 */
-  93% {
-    transform: translateY(-101vh) translateX(-2px) rotate(-0.5deg) scale(1.02, 0.94);
-    opacity: 0.96;
-  }
-
-  /* 最终停在页面上方，保留一点点 */
-  100% {
-    transform: translateY(-97vh) translateX(0) scale(1.06, 0.9);
-    opacity: 0.92;
-    filter: blur(0.2px);
-  }
-}
-
-.blob.flying {
-  animation: liquid-embed 1.35s cubic-bezier(.22,.88,.24,1) forwards !important;
-  pointer-events: none;
-  z-index: 300;
 }
 
 /* ─── Content Panel ─── */
