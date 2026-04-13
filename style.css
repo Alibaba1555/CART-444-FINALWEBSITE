@@ -263,8 +263,7 @@ nav a:hover { opacity: .85; }
   inset: 0;
   z-index: 480;
   pointer-events: none;
-  clip-path: circle(0% at 50% 0%);
-  /* transition applied inline by JS */
+  clip-path: polygon(0% 0%);  /* degenerate = nothing visible; JS sets real path */
 }
 
 /* panel-bg is now a static solid background for the scrollable content.
@@ -329,7 +328,7 @@ nav a:hover { opacity: .85; }
   align-items: flex-end;
   padding-top: 88px;
   padding-bottom: 52px;
-  border-bottom: 1px solid rgba(255,251,240,.055);
+  border-bottom: 1px solid rgba(255,255,255,.14);
   flex-shrink: 0;
 }
 .panel-title {
@@ -354,7 +353,7 @@ nav a:hover { opacity: .85; }
   font-size: 14px;
   letter-spacing: .28em;
   text-transform: uppercase;
-  opacity: .35;
+  opacity: .60;
 }
 .panel-meta-year {
   font-size: 40px;
@@ -379,8 +378,8 @@ nav a:hover { opacity: .85; }
 .work-card {
   position: relative;
   aspect-ratio: 4 / 5;
-  background: rgba(255,251,240,.025);
-  border: 1px solid rgba(255,251,240,.055);
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.22);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -389,8 +388,8 @@ nav a:hover { opacity: .85; }
   transition: border-color .35s, background .35s;
 }
 .work-card:hover {
-  background: rgba(255,251,240,.04);
-  border-color: rgba(255,251,240,.12);
+  background: rgba(255,255,255,.14);
+  border-color: rgba(255,255,255,.40);
 }
 .work-card-ghost {
   position: absolute;
@@ -410,7 +409,7 @@ nav a:hover { opacity: .85; }
   font-size: 22px;
   font-style: italic;
   color: var(--cream);
-  opacity: .6;
+  opacity: .88;
   position: relative;
   line-height: 1.3;
 }
@@ -418,7 +417,7 @@ nav a:hover { opacity: .85; }
   font-size: 13px;
   letter-spacing: .22em;
   color: var(--cream);
-  opacity: .22;
+  opacity: .50;
   margin-top: 6px;
   position: relative;
 }

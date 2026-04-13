@@ -15,23 +15,18 @@ document.addEventListener('mousemove', e => {
 })();
 
 // ── Blob base geometry ────────────────────────────────────────
-// cx, cy: centre in SVG viewBox coords; r: base radius in px
 const BD = {
   'blob-photography': { cx: 89,  cy: 124, r: 78 },
   'blob-design':      { cx: 107, cy: 110, r: 88 },
   'blob-film':        { cx: 79,  cy: 128, r: 68 },
   'blob-game':        { cx: 100, cy: 115, r: 83 }
 };
-
-// 4 sine-wave noise layers per blob: [amplitude, frequency, perPoint phase-shift]
-// Different settings per blob so they never move in sync
 const NOISE = {
-  'blob-photography': [[13, 1.3, 0.0], [9, 2.3, 1.2], [6, 0.8, 2.5], [11, 3.0, 0.9]],
-  'blob-design':      [[15, 1.1, 1.4], [7, 2.5, 0.3], [10, 0.9, 3.0], [6, 1.8, 1.8]],
-  'blob-film':        [[11, 1.6, 2.8], [8, 2.0, 0.7], [9, 0.7, 1.4], [14, 2.6, 3.4]],
-  'blob-game':        [[10, 1.9, 0.7], [13, 1.0, 2.1], [7, 2.7, 0.5], [9, 1.5, 1.9]]
+  'blob-photography': [[13,1.3,0.0],[9,2.3,1.2],[6,0.8,2.5],[11,3.0,0.9]],
+  'blob-design':      [[15,1.1,1.4],[7,2.5,0.3],[10,0.9,3.0],[6,1.8,1.8]],
+  'blob-film':        [[11,1.6,2.8],[8,2.0,0.7],[9,0.7,1.4],[14,2.6,3.4]],
+  'blob-game':        [[10,1.9,0.7],[13,1.0,2.1],[7,2.7,0.5],[9,1.5,1.9]]
 };
-
 const FLOAT_ANIM = {
   'blob-photography': 'fa 3.9s 0s ease-in-out infinite',
   'blob-design':      'fb 4.3s 0s ease-in-out infinite',
@@ -39,52 +34,97 @@ const FLOAT_ANIM = {
   'blob-game':        'fd 4.7s 0s ease-in-out infinite'
 };
 
-// ── Organic blob path generator ───────────────────────────────
-// Generates N anchor points in a ring, each with an independently
-// time-varying radius driven by 4 stacked sine waves.
-// scaleX/scaleY let us squash/stretch for flight physics.
+// ── Blob path helpers ─────────────────────────────────────────
 const N_PTS = 6;
 const f = n => Math.round(n * 10) / 10;
 
 function blobPts(cx, cy, r, noise, t, sx = 1, sy = 1) {
   return Array.from({ length: N_PTS }, (_, i) => {
-    const angle = (i / N_PTS) * Math.PI * 2 - Math.PI / 2; // start from top
-    // Each point gets all 4 sine layers, offset by point index so no two move identically
+    const angle = (i / N_PTS) * Math.PI * 2 - Math.PI / 2;
     const dr = noise.reduce((s, [amp, freq, phase]) =>
       s + amp * Math.sin(t * freq + phase + i * 1.09), 0);
-    return [
-      cx + Math.cos(angle) * (r + dr) * sx,
-      cy + Math.sin(angle) * (r + dr) * sy
-    ];
+    return [cx + Math.cos(angle) * (r + dr) * sx,
+            cy + Math.sin(angle) * (r + dr) * sy];
   });
 }
-
-// Catmull-Rom spline → cubic bezier closed path.
-// Gives perfectly smooth curves through the anchor points with no cusps.
 function smoothPath(pts) {
   const N = pts.length;
   let d = `M${f(pts[0][0])},${f(pts[0][1])}`;
   for (let i = 0; i < N; i++) {
-    const p1 = pts[i],            p2 = pts[(i + 1) % N];
-    const p0 = pts[(i - 1 + N) % N], p3 = pts[(i + 2) % N];
-    // Catmull-Rom → bezier: ctrl pts are 1/6 of chord from adjacent anchor
-    const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
-    const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    const p1 = pts[i], p2 = pts[(i+1)%N];
+    const p0 = pts[(i-1+N)%N], p3 = pts[(i+2)%N];
+    const c1x = p1[0]+(p2[0]-p0[0])/6, c1y = p1[1]+(p2[1]-p0[1])/6;
+    const c2x = p2[0]-(p3[0]-p1[0])/6, c2y = p2[1]-(p3[1]-p1[1])/6;
     d += `C${f(c1x)},${f(c1y)} ${f(c2x)},${f(c2y)} ${f(p2[0])},${f(p2[1])}`;
   }
   return d + 'Z';
 }
 
+// ── Wavy tide clip-path ───────────────────────────────────────
+// Creates a frame-border that fills inward from all four edges,
+// but each edge has a sine-wave boundary instead of a straight line.
+// p=0  → nothing visible (inner = outer rect, cancel via nonzero winding)
+// p=50 → full screen covered (inner collapses to centre point)
+// N=24 points per side gives smooth arcing "tide" shapes.
+function makeWavyClip(p) {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+
+  const mx = W * p / 100;
+  const my = H * p / 100;
+  const tx = mx, ty = my;
+  const bx = W - mx, by = H - my;
+
+  // Wave amplitude: grows with frame thickness, fades to 0 near full coverage
+  // so the final fill is clean with no stray bumps.
+  const rawAmp = Math.min(mx * 0.55, 78);
+  const fade   = Math.min(1, Math.max(0, (50 - p) / 18));
+  const amp    = rawAmp * fade;
+
+  const N    = 24;   // sample points per side
+  const freq = 2.5;  // wave cycles per side (non-integer → irregular look)
+
+  // Generate N points along (x0,y0)→(x1,y1),
+  // displaced perpendicular to travel by amp*sin(t·π·freq).
+  // px,py = unit perpendicular direction.
+  function side(x0, y0, x1, y1, px, py) {
+    return Array.from({length: N}, (_, i) => {
+      const t    = i / (N - 1);
+      const wave = Math.sin(t * Math.PI * freq) * amp;
+      return `${(x0+(x1-x0)*t+px*wave).toFixed(1)}px ${(y0+(y1-y0)*t+py*wave).toFixed(1)}px`;
+    });
+  }
+
+  // Outer CW rect (4 pts) + bridge (1 pt) + inner CCW wavy (4×N pts)
+  const pts = [
+    `0px 0px`, `${W}px 0px`, `${W}px ${H}px`, `0px ${H}px`,
+    `0px 0px`,                    // bridge outer TL → inner TL
+    ...side(tx, ty, tx, by,  1, 0),  // left  ↓ wave ±X
+    ...side(tx, by, bx, by,  0,-1),  // bottom→ wave ±Y (inward=up)
+    ...side(bx, by, bx, ty, -1, 0),  // right  ↑ wave ±X (inward=left)
+    ...side(bx, ty, tx, ty,  0, 1),  // top   ← wave ±Y (inward=down)
+  ];
+
+  return `polygon(${pts.join(', ')})`;
+}
+
 // ── Idle liquid morph ─────────────────────────────────────────
-// Runs every frame for every non-flying blob.
-// Pure path-attribute mutation — no CSS transform involved.
 function idleMorph(ts) {
   const t = ts / 1000;
   document.querySelectorAll('.blob:not(.flying-js)').forEach(blob => {
     const bd = BD[blob.id];
     if (!bd) return;
-    const pts = blobPts(bd.cx, bd.cy, bd.r, NOISE[blob.id], t);
-    blob.querySelector('path').setAttribute('d', smoothPath(pts));
+    const [spd, ph] = [[1.8,0.0],[2.1,1.4],[1.5,2.8],[2.4,0.7]][
+      ['blob-photography','blob-design','blob-film','blob-game'].indexOf(blob.id)
+    ] || [1.8, 0];
+    const s = t * spd + ph;
+    const [cx,cy,r] = [bd.cx,bd.cy,bd.r];
+    const noise = NOISE[blob.id];
+    const dw = Math.sin(s*.90)*r*.09, dh = Math.cos(s*.70+1.2)*r*.04;
+    const dcx = Math.sin(s*.50+.8)*5, dty = Math.cos(s*.60)*3;
+    const asy = Math.sin(s*1.1+2.0)*r*.08;
+    blob.querySelector('path').setAttribute('d',
+      smoothPath(blobPts(cx+dcx, cy+dty, r+dw+asy, noise, t, 1, 1)));
   });
   requestAnimationFrame(idleMorph);
 }
@@ -92,8 +132,8 @@ requestAnimationFrame(idleMorph);
 
 // ── Cursor ring ───────────────────────────────────────────────
 document.querySelectorAll('.blob').forEach(b => {
-  b.addEventListener('mouseenter', () => { ring.style.width = '58px'; ring.style.height = '58px'; });
-  b.addEventListener('mouseleave', () => { ring.style.width = '34px'; ring.style.height = '34px'; });
+  b.addEventListener('mouseenter', () => { ring.style.width='58px'; ring.style.height='58px'; });
+  b.addEventListener('mouseleave', () => { ring.style.width='34px'; ring.style.height='34px'; });
 });
 
 // ── Panel refs ────────────────────────────────────────────────
@@ -104,24 +144,17 @@ const panelStrip = document.getElementById('panel-strip');
 const worksGrid  = document.getElementById('works-grid');
 const closeBtn   = document.getElementById('close-btn');
 let activeBlob   = null;
+let lastFlight   = {};
+
+const colorFlood = document.getElementById('color-flood');
+
+// Cancel any running WAAPI animation on the flood element
+function resetFlood() {
+  colorFlood.getAnimations().forEach(a => a.cancel());
+  colorFlood.style.clipPath = makeWavyClip(0);
+}
 
 // ── Fly animation ─────────────────────────────────────────────
-// Physics phases (DURATION = 1600ms):
-//   0.00–0.06  Pre-jump: blob squishes wide & flat (surface tension charging)
-//   0.06–0.68  Rising:   blob elongates vertically (ascending liquid column)
-//   0.68–0.78  Impact:   tip hits ceiling → splats wide and paper-thin
-//   0.78–0.86  Rebound:  elastic partial reassembly
-//   0.86–1.00  Dissolve: second wider splat, fades to nothing
-//
-// KEY FIX for teleport bug:
-//   The CSS float animation (fa/fb/…) applies transform:translateY on .blob.
-//   If we kill it before noting the offset, the blob snaps back to its
-//   base position. We capture the visual Y offset first, then add it as
-//   the JS animation's starting translate so the blob stays in place.
-
-// Stores flight params so the return animation knows where to fall back to
-let lastFlight = null;
-
 function flyBlob(blob) {
   const id = blob.id;
   const bd = BD[id];
@@ -129,52 +162,36 @@ function flyBlob(blob) {
 
   const rectBefore = blob.getBoundingClientRect();
 
-  // Lock opacity before killing animation — blob HTML has opacity:0 inline,
-  // and blob-enter's `forwards` was the only thing keeping it at 1.
   blob.classList.add('flying-js');
   blob.style.opacity = '1';
   blob.style.animation = 'none';
   void blob.offsetHeight;
 
-  const rectSnap   = blob.getBoundingClientRect();
-  const floatDy    = rectBefore.top - rectSnap.top;
-  const DURATION   = 1600;
+  const rectSnap    = blob.getBoundingClientRect();
+  const floatDy     = rectBefore.top - rectSnap.top;
+  const DURATION    = 1600;
   const totalTravel = rectBefore.top + rectBefore.height / 2 + 120;
 
-  // Remember for return journey
   lastFlight = { id, floatDy, totalTravel };
 
-  // ── Paint the panel with the blob's colour BEFORE it slides up ──
+  // Compute background colour: full category colour, dim only if very bright
   const color = blob.dataset.color;
   const n = parseInt(color.slice(1), 16);
-  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  const r = (n>>16)&255, g = (n>>8)&255, b = n&255;
+  const lum = 0.299*r + 0.587*g + 0.114*b;
+  const k = lum >= 160 ? 0.72 : 1.0;
+  const bgColor = `rgb(${Math.round(r*k)},${Math.round(g*k)},${Math.round(b*k)})`;
 
-  // Compute blob's horizontal center as % of viewport
-  // (flood origin = exact point where blob disappeared)
-  const blobCenterX = Math.round(
-    (rectBefore.left + rectBefore.width / 2) / window.innerWidth * 100
-  );
-
-  // Dark tinted background: 35% blob colour + 65% ink (#050400)
-  const nr = Math.round(r * .35 + 5 * .65);
-  const ng = Math.round(g * .35 + 4 * .65);
-  const nb = Math.round(b * .35 + 0 * .65);
-  const darkColor = `rgb(${nr},${ng},${nb})`;
-
-  const colorFlood = document.getElementById('color-flood');
-  // Position flood at blob's center, fully hidden — no transition yet
-  colorFlood.style.transition = 'none';
-  colorFlood.style.clipPath   = `circle(0% at ${blobCenterX}% 0%)`;
-  colorFlood.style.background = darkColor;
-  document.getElementById('panel-bg').style.background = darkColor;
-  panelStrip.style.background = color;
-
-  lastFlight.blobCenterX = blobCenterX;
+  resetFlood();
+  colorFlood.style.background = bgColor;
+  document.getElementById('panel-bg').style.background = bgColor;
+  panelStrip.style.background = 'rgba(255,255,255,.38)';
 
   const eIO  = t => t < .5 ? 2*t*t : -1+(4-2*t)*t;
-  const eOut = t => 1 - (1-t) * (1-t);
-  const eIn  = t => t * t;
+  const eOut = t => 1-(1-t)*(1-t);
+  const eIn  = t => t*t;
   const start = performance.now();
+  let floodTriggered = false;
 
   function frame(now) {
     const prog = Math.min((now - start) / DURATION, 1);
@@ -183,106 +200,107 @@ function flyBlob(blob) {
     blob.style.transform = `translateY(${floatDy - eIO(prog) * totalTravel}px)`;
     if (prog > .86) blob.style.opacity = String(1 - (prog - .86) / .14);
 
+    // ── Shape morph ──
     let sx, sy;
     if (prog < .06) {
-      const q = Math.sin((prog / .06) * Math.PI);
-      sx = 1 + q * .14; sy = 1 - q * .11;
+      const q = Math.sin((prog/.06)*Math.PI);
+      sx = 1+q*.14; sy = 1-q*.11;
     } else if (prog < .68) {
-      const q = eOut((prog - .06) / .62);
-      sx = 1 - q * .25; sy = 1 + q * .32;
+      const q = eOut((prog-.06)/.62);
+      sx = 1-q*.25; sy = 1+q*.32;
     } else if (prog < .78) {
-      const q = eIn((prog - .68) / .10);
-      sx = 0.75 + q * 2.0; sy = 1.32 - q * 1.20;
+      const q = eIn((prog-.68)/.10);
+      sx = 0.75+q*2.0; sy = 1.32-q*1.20;
     } else if (prog < .86) {
-      const q = eOut((prog - .78) / .08);
-      sx = 2.75 - q * 1.25; sy = 0.12 + q * .38;
+      const q = eOut((prog-.78)/.08);
+      sx = 2.75-q*1.25; sy = 0.12+q*.38;
     } else {
-      const q = (prog - .86) / .14;
-      sx = 1.5 + q * 1.5; sy = 0.50 - q * .49;
+      const q = (prog-.86)/.14;
+      sx = 1.5+q*1.5; sy = 0.50-q*.49;
+    }
+    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec+8, sx, sy)));
+
+    // ── Flood trigger: fires when blob is ~10% opacity ──────────────
+    // At this moment a thin border appears at ALL FOUR EDGES simultaneously
+    // and converges inward, completing just as panel content fades in.
+    if (prog >= 0.86 && !floodTriggered) {
+      floodTriggered = true;
+
+      // Snap to p=0 (nothing), then WAAPI drives p: 0 → 3 → 26 → 50
+      // Frame 0%  → barely-visible border at all 4 edges (instant spark)
+      // Frame 38% → border ~26% thick, half the screen surrounded
+      // Frame 100%→ completely filled
+      colorFlood.animate([
+        { clipPath: makeWavyClip(3),  easing: 'cubic-bezier(0.0, 0.0, 0.3, 1)' },
+        { clipPath: makeWavyClip(26), offset: 0.38 },
+        { clipPath: makeWavyClip(50) }
+      ], { duration: 880, fill: 'forwards' });
+
+      // Panel content fades in once ~half the screen is coloured (~380ms in)
+      setTimeout(() => {
+        panel.classList.add('active');
+        panel.style.color = '#ffffff';
+      }, 360);
     }
 
-    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 8, sx, sy)));
-    if (prog < 1) {
-      requestAnimationFrame(frame);
-    } else {
-      // Blob fully invisible — fire the radial flood from that exact point
-      blob.style.visibility = 'hidden';
-      void colorFlood.offsetHeight; // flush any pending style before transition
-      // Expand: fast initial burst, decelerates as it fills edges
-      colorFlood.style.transition = 'clip-path .80s cubic-bezier(0.15, 0.5, 0.35, 1)';
-      colorFlood.style.clipPath   = `circle(150% at ${blobCenterX}% 0%)`;
-      // Panel content fades in 130ms into the expansion
-      setTimeout(() => panel.classList.add('active'), 130);
-    }
+    if (prog < 1) requestAnimationFrame(frame);
+    else blob.style.visibility = 'hidden';
   }
 
   requestAnimationFrame(frame);
 }
 
-// ── Return drop animation (time-reversal of fly) ──────────────
-// Phases:
-//   0.00–0.12  Condense out of ceiling: flat splat → elongated column
-//   0.12–0.82  Fall back down: column → circular (gravity pull)
-//   0.82–0.92  Landing squish: brief belly-out on impact
-//   0.92–1.00  Settle to idle
+// ── Return animation ──────────────────────────────────────────
+// Blob condenses from where the colour converged and falls back.
+// z-index raised above the flood so it's always visible during descent.
 function returnBlob(blob) {
   const id = blob.id;
   const bd = BD[id];
   const pathEl = blob.querySelector('path');
   const { floatDy, totalTravel } = lastFlight;
 
-  const DURATION = 1500;
-  const eOut3 = t => 1 - Math.pow(1 - t, 3); // ease-out cubic (gentle fall)
-  const eOut  = t => 1 - (1-t) * (1-t);
+  const RDUR = 1450;
+  const eOut3 = t => 1 - Math.pow(1-t, 3);
+  const eOut  = t => 1 - (1-t)*(1-t);
   const start = performance.now();
 
   blob.style.visibility = '';
-  blob.style.opacity = '0';
-  // Start at the same "dissolved" position: spread flat at top
-  blob.style.transform = `translateY(${floatDy - totalTravel}px)`;
+  blob.style.opacity    = '0';
+  blob.style.transform  = `translateY(${floatDy - totalTravel}px)`;
+  blob.style.zIndex     = '490';   // above the flood (z:480) so always visible
 
   function frame(now) {
-    const prog = Math.min((now - start) / DURATION, 1);
+    const prog = Math.min((now - start) / RDUR, 1);
     const tSec = (now - start) / 1000;
 
-    // ── Fall back: from top to original position ──
-    // eOut3 gives a slight acceleration (like gravity) then ease at landing
-    const travel = floatDy - (1 - eOut3(prog)) * totalTravel;
-    blob.style.transform = `translateY(${travel}px)`;
+    blob.style.transform = `translateY(${floatDy - (1 - eOut3(prog)) * totalTravel}px)`;
 
-    // ── Fade in during condensation phase ──
-    if (prog < .18) blob.style.opacity = String(prog / .18);
+    // Fade in during condensation phase
+    if (prog < .16) blob.style.opacity = String(prog / .16);
     else            blob.style.opacity = '1';
 
-    // ── Shape: reverse of fly ──
     let sx, sy;
-    if (prog < .12) {
-      // Condense from flat ceiling splat back into elongated column
-      const q = eOut(prog / .12);
-      sx = 3.0 - q * 2.25;  // 3.0 → 0.75
-      sy = 0.01 + q * 1.31; // 0.01 → 1.32
+    if (prog < .14) {
+      const q = eOut(prog/.14);
+      sx = 2.8 - q*2.1; sy = 0.02 + q*1.26;  // splat → column
     } else if (prog < .82) {
-      // Column falls and rounds out into circle
-      const q = eOut3((prog - .12) / .70);
-      sx = 0.75 + q * .25; // 0.75 → 1.0
-      sy = 1.32 - q * .32; // 1.32 → 1.0
-    } else if (prog < .92) {
-      // Landing squish: brief outward belly as it hits its rest position
-      const q = Math.sin(((prog - .82) / .10) * Math.PI);
-      sx = 1 + q * .13;
-      sy = 1 - q * .10;
+      const q = eOut3((prog-.14)/.68);
+      sx = 0.7 + q*.30; sy = 1.28 - q*.28;   // column → circle
+    } else if (prog < .93) {
+      const q = Math.sin(((prog-.82)/.11)*Math.PI);
+      sx = 1+q*.13; sy = 1-q*.10;             // landing squish
     } else {
       sx = 1; sy = 1;
     }
 
-    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 20, sx, sy)));
+    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec+20, sx, sy)));
 
     if (prog < 1) {
       requestAnimationFrame(frame);
     } else {
-      // Hand off to CSS float + idleMorph
       blob.style.transform = '';
       blob.style.opacity   = '';
+      blob.style.zIndex    = '';
       blob.style.animation = FLOAT_ANIM[id];
       blob.classList.remove('flying-js');
     }
@@ -299,7 +317,7 @@ document.querySelectorAll('.blob').forEach(blob => {
 
     panelTitle.textContent = blob.dataset.category;
     panelCount.textContent = String(JSON.parse(blob.dataset.works).length).padStart(2,'0') + ' Works';
-    worksGrid.innerHTML = JSON.parse(blob.dataset.works).map((w, i) => `
+    worksGrid.innerHTML = JSON.parse(blob.dataset.works).map((w,i) => `
       <div class="work-card">
         <div class="work-card-ghost">${String(i+1).padStart(2,'0')}</div>
         <div class="work-card-title">${w.title}</div>
@@ -311,28 +329,33 @@ document.querySelectorAll('.blob').forEach(blob => {
 });
 
 // ── Close panel ───────────────────────────────────────────────
+// Sequence:
+//  t=0    panel content fades (CSS transition, ~350ms)
+//  t=180  flood retracts: full fill → shrinks inward → thin edge border → nothing
+//         mirror of opening but accelerating (ease-in), 780ms
+//  t=600  blob starts condensing from top — appears just as border fully vanishes
 closeBtn.addEventListener('click', () => {
   const blob = activeBlob;
   activeBlob = null;
-  const { blobCenterX } = lastFlight;
-  const colorFlood = document.getElementById('color-flood');
 
-  // 1. Fade out panel content
   panel.classList.remove('active');
+  panel.style.color = '';
 
-  // 2. Colour retreats radially back toward the original blob impact point.
-  //    Easing: accelerates inward (ease-in feel), giving a "sucked back" quality.
+  // Flood retracts — reverse the frame animation
   setTimeout(() => {
-    colorFlood.style.transition = 'clip-path .72s cubic-bezier(0.65, 0, 0.9, 0.5)';
-    colorFlood.style.clipPath   = `circle(0% at ${blobCenterX}% 0%)`;
-  }, 280);
+    colorFlood.getAnimations().forEach(a => a.cancel());
+    colorFlood.animate([
+      { clipPath: makeWavyClip(50) },
+      { clipPath: makeWavyClip(24), offset: 0.50 },
+      { clipPath: makeWavyClip(3),  offset: 0.88 },
+      { clipPath: makeWavyClip(0)  }
+    ], { duration: 780, easing: 'cubic-bezier(0.55, 0, 0.85, 0.25)', fill: 'forwards' });
+  }, 180);
 
-  // 3. Blob starts condensing and falling just as the colour fully converges —
-  //    looks like the colour crystallises back into the droplet.
-  setTimeout(() => {
-    returnBlob(blob);
-  }, 820);
+  // Blob condenses just as the last coloured edge border disappears
+  // (180 + 780 * 0.88 ≈ 867ms → blob starts at ~850ms to overlap the final vanish)
+  setTimeout(() => returnBlob(blob), 820);
 });
 
-closeBtn.addEventListener('mouseenter', () => { ring.style.width = '50px'; ring.style.height = '50px'; });
-closeBtn.addEventListener('mouseleave', () => { ring.style.width = '34px'; ring.style.height = '34px'; });
+closeBtn.addEventListener('mouseenter', () => { ring.style.width='50px'; ring.style.height='50px'; });
+closeBtn.addEventListener('mouseleave', () => { ring.style.width='34px'; ring.style.height='34px'; });
