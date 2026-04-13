@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -132,8 +132,8 @@
         data-category="Game"
         data-color="#f2be45"
         data-works='[
-          {"title":"PACMAN Variation Jam","year":"2024","project":"pacman","desc":"8 unique game modes — Classic, Clone, Limited Vision, Maze Deformation, Survival, Chill Guy","github":"https://github.com/Alibaba1555/PACMANcart253VariationJam","play":"https://alibaba1555.github.io/PACMANcart253VariationJam/"},
-          {"title":"Start Menu — Parkour","year":"2024","project":"parkour","desc":"A side-scrolling parkour runner — jump, dodge, survive","github":"https://github.com/Alibaba1555/cart263-final","play":"https://alibaba1555.github.io/cart263-final/"}
+          {"title":"PACMAN Variation Jam","year":"2024","project":"pacman","desc":"This project begins with a simple question: what happens when a familiar system starts to break? Based on the classic structure of Pac-Man, I developed a series of variations that gradually distort movement, perception, and spatial logic. Each mode is not just a gameplay change, but a small experiment on how rules shape experience. Instead of designing a completely new game, I chose to work within an existing system — and push it until it feels unfamiliar.","github":"https://github.com/Alibaba1555/PACMANcart253VariationJam","play":"https://alibaba1555.github.io/PACMANcart253VariationJam/"},
+          {"title":"Knight Runner","year":"2025","project":"parkour","desc":"Built with Phaser, this project turns a side-scrolling runner into a small combat system. The player controls a knight who must keep moving forward while fighting enemies through normal attacks and skill attacks. The game combines speed, pressure, and timing, asking the player to constantly decide whether to avoid danger, recover health, or push forward through combat.","github":"https://github.com/Alibaba1555/cart263-final","play":"https://cart263-final.vercel.app/"}
         ]'>
         <div class="blob-shape">
           <svg width="290" height="336" viewBox="0 0 200 232" fill="none" style="overflow:visible">
@@ -163,21 +163,18 @@
         <h1 class="panel-title" id="panel-title">Photography</h1>
         <div class="panel-meta">
           <div class="panel-meta-count" id="panel-count">06 Works</div>
-          <div class="panel-meta-year">2021–2024</div>
+          <div class="panel-meta-year">2025-2026</div>
         </div>
       </div>
       <div class="works-grid" id="works-grid"></div>
     </div>
   </div>
 
-
-  <!-- ── Project detail panel ── -->
   <div class="proj-panel" id="proj-panel">
     <button class="proj-back" id="proj-back">← Works</button>
 
     <div class="proj-layout">
 
-      <!-- Left: playable embed -->
       <div class="proj-play-col">
         <div class="proj-play-wrap">
           <iframe id="game-frame"
@@ -196,17 +193,40 @@
         <p class="proj-controls-hint">Arrow keys to move </p>
       </div>
 
-      <!-- Right: info + modes -->
       <div class="proj-info-col">
         <div class="proj-tag" id="proj-tag">Game · 2024</div>
         <h2 class="proj-title" id="proj-title">PACMAN Variation Jam</h2>
-        <p class="proj-desc" id="proj-desc">8 unique game modes exploring movement, perception &amp; space</p>
+        <p class="proj-desc" id="proj-desc">
+          This project begins with a simple question: what happens when a familiar system starts to break?
+          <br><br>
+          Based on the classic structure of Pac-Man, I developed a series of variations that gradually distort movement, perception, and spatial logic. Each mode is not just a gameplay change, but a small experiment on how rules shape experience.
+          <br><br>
+          Instead of designing a completely new game, I chose to work within an existing system — and push it until it feels unfamiliar.
+        </p>
         <a class="proj-gh-link" id="proj-gh-link" href="#" target="_blank" rel="noopener">
           View on GitHub ↗
         </a>
 
+        <div class="proj-section" id="proj-process-section">
+          <div class="proj-modes-label">Process</div>
+          <p class="proj-desc" id="proj-process">
+            The project was developed through iterative experiments. I started from the original Pac-Man mechanics, then introduced controlled disruptions — limiting vision, cloning agents, deforming the maze, and altering pacing.
+            <br><br>
+            Each iteration tested a specific question: how much can the system change before it stops being recognizable?
+          </p>
+        </div>
+
+        <div class="proj-section" id="proj-reflection-section">
+          <div class="proj-modes-label">Reflection</div>
+          <p class="proj-desc" id="proj-reflection">
+            This project revealed how strongly players rely on learned patterns. Even small changes — like reduced visibility or slight spatial distortion — can create tension and uncertainty.
+            <br><br>
+            Looking back, the project could be pushed further by introducing more dynamic systems, such as adaptive AI or procedural level changes, allowing the game to respond to the player rather than remain fixed.
+          </p>
+        </div>
+
         <div class="proj-modes">
-          <div class="proj-modes-label">Game Modes</div>
+          <div class="proj-modes-label" id="proj-systems-label">Game Modes</div>
           <ul id="proj-modes-list"></ul>
         </div>
       </div>
