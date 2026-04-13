@@ -12,6 +12,30 @@ document.addEventListener('mousemove', e => {
   requestAnimationFrame(rafCursor);
 })();
 
+
+// ── Per-project detail data ───────────────────────────────────
+const PROJECT_DATA = {
+  pacman: {
+    tag: 'Game · 2024',
+    modes: [
+      {n:'01', title:'Classic Mode',      sub:'Easy'},
+      {n:'02', title:'Classic Mode',      sub:'Hard'},
+      {n:'03', title:'Clone Mode'},
+      {n:'04', title:'Limited Vision',    sub:'Easy'},
+      {n:'05', title:'Limited Vision',    sub:'Hard'},
+      {n:'06', title:'Maze Deformation'},
+      {n:'07', title:'Survival Mode'},
+      {n:'08', title:'Chill Guy Mode'},
+    ]
+  },
+  parkour: {
+    tag: 'Game · 2024',
+    modes: [
+      {n:'01', title:'Parkour Runner',    sub:'Start Menu'},
+    ]
+  }
+};
+
 // ── Blob geometry ─────────────────────────────────────────────
 const BD = {
   'blob-photography': {cx:89, cy:124, r:78},
@@ -341,14 +365,98 @@ document.querySelectorAll('.blob').forEach(blob => {
     activeBlob = blob;
     panelTitle.textContent = blob.dataset.category;
     panelCount.textContent = String(JSON.parse(blob.dataset.works).length).padStart(2,'0')+' Works';
-    worksGrid.innerHTML = JSON.parse(blob.dataset.works).map((w,i)=>`
-      <div class="work-card">
-        <div class="work-card-ghost">${String(i+1).padStart(2,'0')}</div>
-        <div class="work-card-title">${w.title}</div>
-        <div class="work-card-year">${w.year}</div>
-      </div>`).join('');
+    const works = JSON.parse(blob.dataset.works);
+    worksGrid.innerHTML = works.map((w,i) => w.project
+      // Featured project card: full-width, shows CTA to open detail
+      ? `<div class="work-card featured" data-project="${w.project}"
+              data-play="${w.play||''}" data-github="${w.github||''}"
+              data-title="${w.title}" data-desc="${w.desc||''}" data-year="${w.year}">
+           <div class="work-card-ghost">${String(i+1).padStart(2,'0')}</div>
+           <div class="work-card-body">
+             <div class="work-card-title">${w.title}</div>
+             <div class="work-card-year">${w.year}</div>
+             <div class="work-card-cta">View project + play ↗</div>
+           </div>
+         </div>`
+      // Standard card
+      : `<div class="work-card">
+           <div class="work-card-ghost">${String(i+1).padStart(2,'0')}</div>
+           <div class="work-card-title">${w.title}</div>
+           <div class="work-card-year">${w.year}</div>
+         </div>`
+    ).join('');
     flyBlob(blob);
   });
+});
+
+
+// ── Project panel ─────────────────────────────────────────────
+const projPanel  = document.getElementById('proj-panel');
+const projBack   = document.getElementById('proj-back');
+const gameFrame  = document.getElementById('game-frame');
+const gamePH     = document.getElementById('game-placeholder');
+const gameExtLink = document.getElementById('game-external');
+
+// Open project detail panel (called when a featured work card is clicked)
+function openProject(card) {
+  const projectId = card.dataset.project || '';
+  const play      = card.dataset.play    || '';
+  const github    = card.dataset.github  || '#';
+  const title     = card.dataset.title   || '';
+  const desc      = card.dataset.desc    || '';
+  const year      = card.dataset.year    || '';
+  const data      = PROJECT_DATA[projectId] || {};
+
+  document.getElementById('proj-title').textContent = title;
+  document.getElementById('proj-desc').textContent  = desc;
+  document.getElementById('proj-tag').textContent   = data.tag || `Game · ${year}`;
+  document.getElementById('proj-gh-link').href      = github;
+
+  // Populate modes list (hide section if empty)
+  const modesList = document.getElementById('proj-modes-list');
+  const modesSection = modesList.closest('.proj-modes');
+  const modes = data.modes || [];
+  if (modes.length > 0) {
+    modesList.innerHTML = modes.map(m =>
+      `<li><em>${m.n}</em> ${m.title}${m.sub ? ` <span>(${m.sub})</span>` : ''}</li>`
+    ).join('');
+    modesSection.style.display = '';
+  } else {
+    modesSection.style.display = 'none';
+  }
+
+  // Load game iframe
+  gameFrame.src = '';
+  gamePH.classList.remove('hidden');
+  gameExtLink.href = play || github;
+  gameExtLink.textContent = play ? 'Open in new tab ↗' : 'View on GitHub ↗';
+
+  if (play) {
+    setTimeout(() => {
+      gameFrame.src = play;
+      const hide = () => gamePH.classList.add('hidden');
+      gameFrame.onload = hide;
+      setTimeout(hide, 5000);
+    }, 600);
+  }
+
+  projPanel.classList.add('active');
+}
+
+function closeProject() {
+  projPanel.classList.remove('active');
+  // Blank iframe after slide-out to stop audio/resources
+  setTimeout(() => { gameFrame.src = ''; }, 700);
+}
+
+projBack.addEventListener('click', closeProject);
+projBack.addEventListener('mouseenter', () => { ring.style.width='50px'; ring.style.height='50px'; });
+projBack.addEventListener('mouseleave', () => { ring.style.width='34px'; ring.style.height='34px'; });
+
+// Delegate click on featured cards inside the works grid
+document.addEventListener('click', e => {
+  const card = e.target.closest('.work-card.featured');
+  if (card) openProject(card);
 });
 
 // ── Close panel ───────────────────────────────────────────────

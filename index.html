@@ -132,12 +132,8 @@
         data-category="Game"
         data-color="#f2be45"
         data-works='[
-          {"title":"Prototype Alpha","year":"2024"},
-          {"title":"Interactive Fiction No.4","year":"2024"},
-          {"title":"Simulation, Void","year":"2023"},
-          {"title":"Puzzle — Space","year":"2023"},
-          {"title":"Narrative Engine","year":"2022"},
-          {"title":"Browser Experiment","year":"2021"}
+          {"title":"PACMAN Variation Jam","year":"2024","project":"pacman","desc":"8 unique game modes — Classic, Clone, Limited Vision, Maze Deformation, Survival, Chill Guy","github":"https://github.com/Alibaba1555/PACMANcart253VariationJam","play":"https://alibaba1555.github.io/PACMANcart253VariationJam/"},
+          {"title":"Start Menu — Parkour","year":"2024","project":"parkour","desc":"A side-scrolling parkour runner — jump, dodge, survive","github":"https://github.com/Alibaba1555/cart263-final","play":"https://alibaba1555.github.io/cart263-final/"}
         ]'>
         <div class="blob-shape">
           <svg width="290" height="336" viewBox="0 0 200 232" fill="none" style="overflow:visible">
@@ -171,6 +167,50 @@
         </div>
       </div>
       <div class="works-grid" id="works-grid"></div>
+    </div>
+  </div>
+
+
+  <!-- ── Project detail panel ── -->
+  <div class="proj-panel" id="proj-panel">
+    <button class="proj-back" id="proj-back">← Works</button>
+
+    <div class="proj-layout">
+
+      <!-- Left: playable embed -->
+      <div class="proj-play-col">
+        <div class="proj-play-wrap">
+          <iframe id="game-frame"
+            src=""
+            class="game-frame"
+            allowfullscreen
+            allow="keyboard; gamepad"
+            title="PACMAN Variation Jam — playable"></iframe>
+          <div class="game-frame-placeholder" id="game-placeholder">
+            <span>Loading game…</span>
+            <a id="game-external" href="#" target="_blank" rel="noopener">
+              Open in new tab ↗
+            </a>
+          </div>
+        </div>
+        <p class="proj-controls-hint">Arrow keys / WASD to move · P to pause</p>
+      </div>
+
+      <!-- Right: info + modes -->
+      <div class="proj-info-col">
+        <div class="proj-tag" id="proj-tag">Game · 2024</div>
+        <h2 class="proj-title" id="proj-title">PACMAN Variation Jam</h2>
+        <p class="proj-desc" id="proj-desc">8 unique game modes exploring movement, perception &amp; space</p>
+        <a class="proj-gh-link" id="proj-gh-link" href="#" target="_blank" rel="noopener">
+          View on GitHub ↗
+        </a>
+
+        <div class="proj-modes">
+          <div class="proj-modes-label">Game Modes</div>
+          <ul id="proj-modes-list"></ul>
+        </div>
+      </div>
+
     </div>
   </div>
 
