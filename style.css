@@ -215,7 +215,7 @@ nav a:hover { opacity: .85; }
 .blob:hover .blob-num   { opacity: 0; }
 .blob:hover .blob-label { opacity: .75; }
 
-/* Float animations (position drift; shape morph handled by JS) */
+/* Float drift animations (Y position only; shape handled entirely by JS) */
 @keyframes fa {
   0%,100% { transform: translateY(0) rotate(0deg); }
   32%     { transform: translateY(-13px) rotate(1.1deg); }
@@ -237,7 +237,7 @@ nav a:hover { opacity: .85; }
   62%     { transform: translateY(7px) rotate(-.9deg); }
 }
 
-/* Page-load fade-in */
+/* Entry fade-in (blobs start at opacity:0 in HTML) */
 @keyframes blob-enter {
   from { opacity: 0; transform: translateY(28px) scale(.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
