@@ -254,24 +254,21 @@ nav a:hover { opacity: .85; }
   pointer-events: all;
   opacity: 1;
 }
-/* ─── Colour flood ───────────────────────────────────────────
-   Radial reveal from the exact point where the blob disappeared.
-   clip-path: circle() expands/contracts under JS-controlled transitions.
-   No CSS transition here — easing differs for open vs close. */
+/* ─── Colour flood canvas ─── JS RAF draws tide waves each frame ─── */
 #color-flood {
   position: fixed;
   inset: 0;
   z-index: 480;
   pointer-events: none;
-  clip-path: polygon(0% 0%);  /* degenerate = nothing visible; JS sets real path */
+  display: block;
 }
 
-/* panel-bg is now a static solid background for the scrollable content.
-   No animation — the flood element handles the reveal. */
+/* panel-bg is transparent — the flood canvas beneath (z:480) provides the colour.
+   This prevents any solid rectangle flashing over the still-running tide animation. */
 .panel-bg {
   position: absolute;
   inset: 0;
-  /* colour set dynamically by JS (same as flood) */
+  background: transparent;
 }
 
 /* Colour strip at very top */
