@@ -848,3 +848,109 @@ closeBtn.addEventListener('mouseleave', () => {
   ring.style.width = '34px';
   ring.style.height = '34px';
 });
+
+// ── About panel / Wheel-based crawl ─────────────────────────
+const aboutPanel = document.getElementById('about-panel');
+const aboutBack = document.getElementById('about-back');
+const crawlScrollEl = document.getElementById('crawl-scroll');
+const navAbout = document.getElementById('nav-about');
+
+let crawlOpen = false;
+let crawlPos = 0;
+let crawlTarget = 0;
+
+function getCrawlMetrics() {
+  const contentH = crawlScrollEl.scrollHeight;
+  const viewportH = window.innerHeight;
+
+  const topLimit = viewportH * 3.22;
+  const startY = viewportH * 0.68;
+  const endY = -(contentH - viewportH * 0.82);
+
+  return { topLimit, startY, endY };
+}
+
+function clampCrawl(value) {
+  const { topLimit, endY } = getCrawlMetrics();
+  return Math.max(endY, Math.min(topLimit, value));
+}
+
+function resetCrawl() {
+  const { startY } = getCrawlMetrics();
+  crawlPos = startY;
+  crawlTarget = startY;
+  crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
+}
+
+navAbout.addEventListener('click', e => {
+  e.preventDefault();
+  aboutPanel.classList.add('active');
+  crawlOpen = true;
+
+  requestAnimationFrame(() => {
+    resetCrawl();
+  });
+});
+
+aboutBack.addEventListener('click', () => {
+  crawlOpen = false;
+  aboutPanel.classList.remove('active');
+});
+
+aboutBack.addEventListener('mouseenter', () => {
+  ring.style.width = '50px';
+  ring.style.height = '50px';
+});
+
+aboutBack.addEventListener('mouseleave', () => {
+  ring.style.width = '34px';
+  ring.style.height = '34px';
+});
+
+document.addEventListener('keydown', e => {
+  if (!crawlOpen) return;
+
+  if (e.key === 'Escape') aboutBack.click();
+
+  if (e.key === 'ArrowDown') {
+    crawlTarget -= 90;
+    crawlTarget = clampCrawl(crawlTarget);
+  }
+
+  if (e.key === 'ArrowUp') {
+    crawlTarget += 90;
+    crawlTarget = clampCrawl(crawlTarget);
+  }
+
+  if (e.key === 'Home') {
+    resetCrawl();
+  }
+
+  if (e.key === 'End') {
+    const { endY } = getCrawlMetrics();
+    crawlTarget = endY;
+  }
+});
+
+aboutPanel.addEventListener('wheel', e => {
+  if (!crawlOpen) return;
+  e.preventDefault();
+
+  crawlTarget -= e.deltaY;
+  crawlTarget = clampCrawl(crawlTarget);
+}, { passive: false });
+
+window.addEventListener('resize', () => {
+  if (!crawlOpen) return;
+  crawlTarget = clampCrawl(crawlTarget);
+  crawlPos = clampCrawl(crawlPos);
+  crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
+});
+
+(function crawlRaf() {
+  requestAnimationFrame(crawlRaf);
+  if (!crawlOpen) return;
+
+  crawlPos += (crawlTarget - crawlPos) * 0.1;
+  crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
+})();

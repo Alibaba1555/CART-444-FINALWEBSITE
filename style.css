@@ -903,3 +903,136 @@ nav a:hover { opacity: .85; }
 }
 .ph-thumb.active,
 .ph-thumb:hover { opacity: 1; border-color: rgba(255,255,255,.5); }
+/* ── About / Crawl panel ──────────────────────────────────── */
+.about-panel {
+  position: fixed; inset: 0;
+  z-index: 700;
+  background: #020200;
+  transform: translateX(-100%);
+  transition: transform .68s cubic-bezier(.76,0,.24,1);
+  pointer-events: none;
+  overflow: hidden;
+}
+.about-panel.active {
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+.about-back {
+  position: absolute;
+  top: 42px; left: 96px;
+  background: none; border: none;
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  cursor: none;
+  z-index: 20;
+  padding: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s;
+}
+.about-panel.active .about-back {
+  opacity: .35;
+  pointer-events: all;
+  transition: opacity .4s .85s ease;
+}
+.about-back:hover { opacity: .9 !important; }
+
+/* Stage: 3D perspective container */
+.crawl-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  perspective: 280px;
+  perspective-origin: 50% 18%;
+  overflow: hidden;
+}
+
+/* Horizon fade — strong, SW-style */
+.crawl-stage::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 34%;
+  background: linear-gradient(to bottom, #020200 22%, transparent);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Entrance fade — bottom */
+.crawl-stage::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 12%;
+  background: linear-gradient(to top, #020200, transparent);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 3D tilt container */
+.crawl-tilt {
+  width: min(720px, 72vw);
+  transform: rotateX(18deg);
+  transform-origin: center bottom;
+  padding-bottom: 8vh;
+}
+
+.crawl-scroll {
+  will-change: transform;
+}
+
+/* Content styles */
+.crawl-title {
+  font-size: clamp(34px, 4vw, 58px);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: .04em;
+  color: var(--warm);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.crawl-subtitle {
+  font-size: 12px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--warm);
+  opacity: .5;
+  text-align: center;
+  margin-bottom: 52px;
+}
+
+.crawl-section-label {
+  font-size: 11px;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--warm);
+  opacity: .45;
+  text-align: center;
+  margin: 56px 0 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(238,222,176,.12);
+}
+
+.crawl-p {
+  font-size: clamp(18px, 1.55vw, 24px);
+  line-height: 1.72;
+  color: var(--warm);
+  opacity: .88;
+  text-align: left;
+  margin-bottom: 26px;
+}
+.crawl-end-mark {
+  font-size: 24px;
+  color: var(--warm);
+  opacity: .24;
+  text-align: center;
+  margin-top: 56px;
+  padding-bottom: 65vh;
+}
