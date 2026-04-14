@@ -114,6 +114,21 @@ const PROJECT_DATA = {
       { n: '03', title: 'Spatial composition', sub: 'Scale & shadow' }
     ]
   },
+  recipe: {
+    tag: 'Other · 2024 · OpenAI API',
+    systemsLabel: 'Features',
+    noGithub: false,
+    gallery: ['images/O1.png'],
+    process: `The idea was simple: instead of searching for a recipe and then checking if you have the ingredients, reverse the process entirely. You enter what you already have — a few items, however odd the combination — and the site generates a fitting recipe on the spot.<br><br>Under the hood, the input (ingredients + cuisine preference + dietary flags) is assembled into a structured prompt and sent to the OpenAI API. The response is parsed and rendered as a clean recipe card with ingredients, step-by-step instructions, and estimated preparation time.`,
+    reflection: `What surprised me was how much the framing of the prompt matters. Early versions returned generic results; tightening the instruction structure — specifying format, tone, and constraints — made the output dramatically more useful and consistent.<br><br>The project also raised an interesting design question: how do you make an AI-generated result feel trustworthy? Small details like structured layout, estimated times, and dietary labels helped the output feel considered rather than arbitrary.`,
+    modes: [
+      { n: '01', title: 'Ingredient input', sub: 'Free-form text entry' },
+      { n: '02', title: 'Cuisine selector', sub: 'French, Italian, Asian…' },
+      { n: '03', title: 'Dietary filters', sub: 'Gluten-free, Vegan, Dessert' },
+      { n: '04', title: 'OpenAI API', sub: 'GPT-powered recipe generation' },
+      { n: '05', title: 'Recipe card output', sub: 'Ingredients + instructions' }
+    ]
+  },
   soulslike: {
     tag: 'Game · 2025 · Unreal Engine 4',
     systemsLabel: 'Game Systems',
@@ -197,7 +212,7 @@ function idleMorph(ts) {
   document.querySelectorAll('.blob:not(.flying-js)').forEach(blob => {
     const bd = BD[blob.id];
     if (!bd) return;
-    const idx = ['blob-photography','blob-design','blob-film','blob-game'].indexOf(blob.id);
+    const idx = ['blob-photography','blob-design','blob-other','blob-game'].indexOf(blob.id);
     const [spd, ph] = [[1.8,0.0],[2.1,1.4],[1.5,2.8],[2.4,0.7]][idx];
     const s = t * spd + ph;
     const { cx, cy, r } = bd;
