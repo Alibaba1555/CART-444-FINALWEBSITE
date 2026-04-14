@@ -954,3 +954,48 @@ window.addEventListener('resize', () => {
   crawlPos += (crawlTarget - crawlPos) * 0.1;
   crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
 })();
+
+// ── Contact panel ───────────────────────────────────────────
+const contactPanel = document.getElementById('contact-panel');
+const contactBack = document.getElementById('contact-back');
+const navContact = document.getElementById('nav-contact');
+
+const CONTACT_BG = 'rgb(34, 24, 18)';
+let contactOpen = false;
+
+navContact.addEventListener('click', e => {
+  e.preventDefault();
+  if (contactOpen) return;
+
+  contactOpen = true;
+
+  animateTideIn(CONTACT_BG, 950, () => {
+    contactPanel.classList.add('active');
+  });
+});
+
+contactBack.addEventListener('click', () => {
+  contactPanel.classList.remove('active');
+
+  setTimeout(() => {
+    animateTideOut(CONTACT_BG, 820, () => {
+      contactOpen = false;
+    });
+  }, 160);
+});
+
+contactBack.addEventListener('mouseenter', () => {
+  ring.style.width = '50px';
+  ring.style.height = '50px';
+});
+
+contactBack.addEventListener('mouseleave', () => {
+  ring.style.width = '34px';
+  ring.style.height = '34px';
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && contactOpen) {
+    contactBack.click();
+  }
+});
