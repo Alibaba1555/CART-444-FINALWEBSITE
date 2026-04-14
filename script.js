@@ -49,8 +49,18 @@ const PROJECT_DATA = {
     ]
   },
   soulslike: {
-    tag: 'Game · 2025',
+    tag: 'Game · 2025 · Unreal Engine 4',
     systemsLabel: 'Game Systems',
+    noGithub: true,
+    gallery: [
+      'images/week10 7.png',
+      'images/week10 8.png',
+      'images/week11 1.png',
+      'images/week11 2.png',
+      'images/week11 3.png',
+      'images/week11 51.gif',
+      'images/week11 71.gif'
+    ],
     process: `This project was first created as an early prototype in 2023, but at that time it remained unfinished. Recently, I returned to it and finally had the chance to turn it into a more complete playable experience.<br><br>The main focus was building a combat loop that feels heavier and more deliberate. I developed a moveset with two light attacks and four heavy combo attacks, while also adding a dodge roll so the player could avoid enemy attacks and create openings.<br><br>The overall structure is linear: the player progresses from point A to point B through a sequence of encounters. Rather than building a large world, I focused on creating a small but complete slice of a soul-like experience.`,
     reflection: `What matters most in this project is not scale, but rhythm. Once dodge timing, attack commitment, and enemy pressure are introduced, even a short level can start to feel tense and intentional.<br><br>At its current stage, the game already forms a full loop: movement, combat, enemy encounters, and a boss at the end. At the same time, it still feels like a test space rather than a fully polished game.<br><br>If I continue developing it, I would improve enemy behavior, attack feedback, and encounter pacing so the combat feels more readable, punishing, and satisfying.`,
     modes: [
@@ -457,28 +467,62 @@ const gamePH = document.getElementById('game-placeholder');
 const gameExtLink = document.getElementById('game-external');
 const demoImage = document.getElementById('demo-image');
 
+// Gallery state
+let galleryImages = [];
+let galleryIndex  = 0;
+let galleryTimer  = null;
+
+function showGalleryFrame(idx) {
+  galleryIndex = ((idx % galleryImages.length) + galleryImages.length) % galleryImages.length;
+  const src = galleryImages[galleryIndex];
+  demoImage.style.opacity = '0';
+  demoImage.onload = () => { demoImage.style.opacity = '1'; };
+  demoImage.src = src;
+  if (!demoImage.classList.contains('active')) demoImage.classList.add('active');
+  gamePH.classList.add('hidden');
+  // Update dots
+  document.querySelectorAll('.gallery-dot').forEach((d,i) => {
+    d.classList.toggle('active', i === galleryIndex);
+  });
+}
+
+function startGalleryAuto() {
+  stopGalleryAuto();
+  galleryTimer = setInterval(() => showGalleryFrame(galleryIndex + 1), 3200);
+}
+function stopGalleryAuto() {
+  if (galleryTimer) { clearInterval(galleryTimer); galleryTimer = null; }
+}
+
 function openProject(card) {
   const projectId = card.dataset.project || '';
-  const play = card.dataset.play || '';
-  const github = card.dataset.github || '#';
-  const title = card.dataset.title || '';
-  const desc = card.dataset.desc || '';
-  const year = card.dataset.year || '';
-  const img = card.dataset.img || '';
-  const data = PROJECT_DATA[projectId] || {};
+  const play      = card.dataset.play    || '';
+  const github    = card.dataset.github  || '#';
+  const title     = card.dataset.title   || '';
+  const desc      = card.dataset.desc    || '';
+  const year      = card.dataset.year    || '';
+  const data      = PROJECT_DATA[projectId] || {};
 
-  document.getElementById('proj-title').textContent = title;
-  document.getElementById('proj-desc').innerHTML = desc;
-  document.getElementById('proj-tag').textContent = data.tag || `Game · ${year}`;
-  document.getElementById('proj-gh-link').href = github;
-  document.getElementById('proj-process').innerHTML = data.process || '';
+  document.getElementById('proj-title').textContent    = title;
+  document.getElementById('proj-desc').innerHTML       = desc;
+  document.getElementById('proj-tag').textContent      = data.tag || `Game · ${year}`;
+  document.getElementById('proj-process').innerHTML    = data.process || '';
   document.getElementById('proj-reflection').innerHTML = data.reflection || '';
   document.getElementById('proj-systems-label').textContent = data.systemsLabel || 'Game Modes';
 
-  const modesList = document.getElementById('proj-modes-list');
+  // GitHub link: hide entirely when project has no public repo
+  const ghLink = document.getElementById('proj-gh-link');
+  if (data.noGithub || !github || github === '#') {
+    ghLink.style.display = 'none';
+  } else {
+    ghLink.style.display = '';
+    ghLink.href = github;
+  }
+
+  // Modes list
+  const modesList    = document.getElementById('proj-modes-list');
   const modesSection = modesList.closest('.proj-modes');
   const modes = data.modes || [];
-
   if (modes.length > 0) {
     modesList.innerHTML = modes.map(m =>
       `<li><em>${m.n}</em> ${m.title}${m.sub ? ` <span>(${m.sub})</span>` : ''}</li>`
@@ -488,29 +532,66 @@ function openProject(card) {
     modesSection.style.display = 'none';
   }
 
+  // Reset media area
+  stopGalleryAuto();
   gameFrame.src = '';
   demoImage.classList.remove('active');
+  demoImage.style.opacity = '1';
   demoImage.removeAttribute('src');
-
   gamePH.classList.remove('hidden');
-  gameExtLink.href = play || github;
-  gameExtLink.textContent = play && play !== '#' ? 'Open in new tab ↗' : 'View on GitHub ↗';
+  gamePH.querySelector('span').textContent = 'Loading…';
 
-  if (play && play !== '#') {
+  // Remove old gallery nav if any
+  document.querySelectorAll('.gallery-nav, .gallery-dots').forEach(el => el.remove());
+
+  const ghExternal = document.getElementById('game-external');
+
+  if (data.gallery && data.gallery.length > 0) {
+    // ── Image gallery mode ──────────────────────────────────────
+    galleryImages = data.gallery;
+    galleryIndex  = 0;
+
+    // Build dot indicators
+    const dots = document.createElement('div');
+    dots.className = 'gallery-dots';
+    dots.innerHTML = galleryImages.map((_,i) =>
+      `<span class="gallery-dot${i===0?' active':''}"></span>`).join('');
+    document.querySelector('.proj-play-wrap').appendChild(dots);
+
+    // Build prev/next arrows
+    const nav = document.createElement('div');
+    nav.className = 'gallery-nav';
+    nav.innerHTML = `<button class="gal-prev">&#8592;</button><button class="gal-next">&#8594;</button>`;
+    document.querySelector('.proj-play-wrap').appendChild(nav);
+
+    nav.querySelector('.gal-prev').addEventListener('click', () => {
+      stopGalleryAuto(); showGalleryFrame(galleryIndex - 1); startGalleryAuto();
+    });
+    nav.querySelector('.gal-next').addEventListener('click', () => {
+      stopGalleryAuto(); showGalleryFrame(galleryIndex + 1); startGalleryAuto();
+    });
+
+    // Hide external link row — no playable version
+    ghExternal.parentElement.style.display = 'none';
+
+    setTimeout(() => { showGalleryFrame(0); startGalleryAuto(); }, 500);
+
+  } else if (play && play !== '#') {
+    // ── Iframe / playable mode ──────────────────────────────────
+    ghExternal.parentElement.style.display = '';
+    ghExternal.href = play;
+    ghExternal.textContent = 'Open in new tab ↗';
     setTimeout(() => {
       gameFrame.src = play;
       const hide = () => gamePH.classList.add('hidden');
       gameFrame.onload = hide;
       setTimeout(hide, 5000);
     }, 600);
-  } else if (img) {
-    demoImage.src = img;
-    demoImage.classList.add('active');
-    gamePH.querySelector('span').textContent = 'Project preview';
-    gameExtLink.textContent = github && github !== '#' ? 'View on GitHub ↗' : 'Preview only';
   } else {
+    ghExternal.parentElement.style.display = '';
+    ghExternal.href = github !== '#' ? github : '#';
+    ghExternal.textContent = github !== '#' ? 'View on GitHub ↗' : 'Preview unavailable';
     gamePH.querySelector('span').textContent = 'Playable demo not embedded';
-    gameExtLink.textContent = github && github !== '#' ? 'View on GitHub ↗' : 'Preview unavailable';
   }
 
   projPanel.classList.add('active');
@@ -518,12 +599,15 @@ function openProject(card) {
 
 function closeProject() {
   projPanel.classList.remove('active');
+  stopGalleryAuto();
   setTimeout(() => {
     gameFrame.src = '';
     demoImage.classList.remove('active');
     demoImage.removeAttribute('src');
     gamePH.classList.remove('hidden');
     gamePH.querySelector('span').textContent = 'Loading game…';
+    document.querySelectorAll('.gallery-nav, .gallery-dots').forEach(el => el.remove());
+    galleryImages = [];
   }, 700);
 }
 

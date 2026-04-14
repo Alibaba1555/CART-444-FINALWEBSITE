@@ -653,3 +653,67 @@ nav a:hover { opacity: .85; }
   opacity: .35;
   margin-top: 6px;
 }
+/* ── Gallery slideshow ─────────────────────────────────────── */
+.demo-image {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+  z-index: 2;
+  transition: opacity .5s ease;
+}
+.demo-image.active { display: block; }
+
+/* Dot indicators */
+.gallery-dots {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 7px;
+  z-index: 10;
+  pointer-events: none;
+}
+.gallery-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,251,240,.28);
+  transition: background .3s, transform .3s;
+}
+.gallery-dot.active {
+  background: rgba(255,251,240,.85);
+  transform: scale(1.35);
+}
+
+/* Prev / Next arrows */
+.gallery-nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  z-index: 10;
+  pointer-events: none;
+}
+.gal-prev, .gal-next {
+  pointer-events: all;
+  background: rgba(5,4,0,.45);
+  border: 1px solid rgba(255,251,240,.18);
+  color: var(--cream);
+  font-size: 18px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none;
+  opacity: 0;
+  transition: opacity .25s, background .25s;
+}
+.proj-play-wrap:hover .gal-prev,
+.proj-play-wrap:hover .gal-next { opacity: .75; }
+.gal-prev:hover, .gal-next:hover {
+  background: rgba(5,4,0,.75);
+  opacity: 1 !important;
+}
