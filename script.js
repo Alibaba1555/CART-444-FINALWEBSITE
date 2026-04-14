@@ -129,6 +129,38 @@ const PROJECT_DATA = {
       { n: '05', title: 'Recipe card output', sub: 'Ingredients + instructions' }
     ]
   },
+  pollution: {
+    tag: 'Other · 2025 · Max/MSP',
+    systemsLabel: 'Sound Sources',
+    noGithub: true,
+    gallery: ['images/O2.png'],
+    process: `O2 is a real-time city sound system built in Max/MSP. Air quality data is pulled live from any city via API — pollutants like NO₂, PM2.5, CO, and ozone are each mapped to distinct sound textures and layered together.<br><br>A heavily polluted city generates industrial noise, low-frequency hum, and synthetic interference. A clean city produces wind, birdsong, and open natural tones. All values are summed into a single continuous audio output — a sonic portrait of a city's atmosphere at that exact moment.`,
+    reflection: `What interested me most was the question of legibility: can someone hear pollution without being told what they are listening to? Early tests suggested yes — listeners consistently described the heavily polluted presets as dense, uncomfortable, or mechanical, without prior context.<br><br>The project also raised questions about data as material. Rather than visualising air quality, sonifying it forces a different kind of attention — duration, texture, and change over time become the medium.`,
+    modes: [
+      { n: '01', title: 'NO₂', sub: 'Industrial / factory noise' },
+      { n: '02', title: 'PM2.5', sub: 'Dense granular texture' },
+      { n: '03', title: 'CO', sub: 'Low-frequency hum' },
+      { n: '04', title: 'Ozone', sub: 'High resonant interference' },
+      { n: '05', title: 'Clean baseline', sub: 'Wind & birdsong' },
+      { n: '06', title: 'Live API pull', sub: 'Any city, real-time' }
+    ]
+  },
+  jukebox: {
+    tag: 'Other · 2025 · Max/MSP · OpenAI API',
+    systemsLabel: 'Signal Chain',
+    noGithub: true,
+    gallery: ['images/O3.png'],
+    process: `The name Max/MSP comes from Max Mathews — the engineer who, in 1961, programmed the IBM 7094 to sing Daisy Bell, the first time a computer had ever produced a recognisable human voice. That moment was the direct inspiration for this patch.<br><br>The goal was to reconstruct that sound: not a sample or a recording, but a synthesised voice built from scratch in Max. When a song title is entered, a Node.js bridge sends it to the OpenAI API, which returns the note sequence as pitch, length, and velocity values. Those values are then routed through a custom synthesizer — sine oscillators, resonant filters, a PWM-driven pulse wave, and an ADSR envelope — to produce the melody.<br><br>A LoFi mode layers noise, tanh distortion, and bit degradation (down to 6-bit at 11025 Hz) to push the output closer to the texture of the original 1961 IBM recording.`,
+    reflection: `What surprised me was how much the LoFi processing matters. Without it, the output sounds like a clean MIDI render. With the degradation chain engaged, something shifts — the sound becomes fragile in a way that feels more like memory than music.<br><br>The project also revealed how much information is carried by imperfection. The IBM 7094 didn&#39;t sound the way it did by design — it sounded that way because of hardware constraints. Simulating those constraints intentionally is a different act entirely, and that gap is worth sitting with.`,
+    modes: [
+      { n: '01', title: 'Song title input', sub: 'Text → OpenAI API' },
+      { n: '02', title: 'Note sequence', sub: 'Pitch · length · velocity' },
+      { n: '03', title: 'Sine synthesis', sub: 'Custom oscillator chain' },
+      { n: '04', title: 'Resonant filters', sub: 'Bandpass · highpass · lowpass' },
+      { n: '05', title: 'LoFi mode', sub: '6-bit · noise · tanh distortion' },
+      { n: '06', title: 'PWM LFO', sub: 'Auto duty-cycle modulation' }
+    ]
+  },
   soulslike: {
     tag: 'Game · 2025 · Unreal Engine 4',
     systemsLabel: 'Game Systems',
