@@ -67,7 +67,7 @@ const PROJECT_DATA = {
     systemsLabel: 'About the Work',
     noGithub: true,
     gallery: ['images/D1.png','images/D2.png'],
-    process: `The Roberto Rossellini poster started from an interest in how film posters from the 1950s–70s used typography as a structural element rather than decoration. The challenge was to make something that felt of its era — heavy serif type, collaged photography — without becoming pastiche.<br><br>The Chinese character poster explores the same tension in a different tradition: using ink silhouettes of a figure against a field of solid colour, where the negative space carries as much weight as the mark.`,
+    process: `The Roberto Rossellini poster started from an interest in how film posters from the 1950s–70s used typography as a structural element rather than decoration. The challenge was to make something that felt of its era — heavy serif type, collaged photography — without becoming pastiche.<br><br>`,
     reflection: `Graphic design, for me, is mostly about restraint — deciding what not to include. Both posters taught me that strong work often comes from committing fully to a single compositional idea and removing everything that dilutes it.`,
     modes: [
       { n: '01', title: 'Rossellini tribute', sub: 'Typographic poster' },
@@ -106,7 +106,7 @@ const PROJECT_DATA = {
     systemsLabel: 'About the Work',
     noGithub: true,
     gallery: ['images/E1.png'],
-    process: `These pieces explore spatial storytelling through environment design — dark corridor architecture, game space atmosphere, and a voxel-style ship. The corridors were built to communicate a specific feeling before any narrative context: something industrial, confined, and slightly worn.<br><br>The voxel ship model works differently — the grid-based aesthetic creates a visual language that is simultaneously retro and abstract, letting the glowing yellow elements read as light sources or collectibles depending on what the viewer brings to it.`,
+    process: `These pieces explore spatial storytelling through environment design — dark corridor architecture, game space atmosphere. The corridors were built to communicate a specific feeling before any narrative context: something industrial, confined, and slightly worn.<br><br>`,
     reflection: `Environment design taught me that space communicates before story does. A player or viewer will have already formed an emotional register from the space before they encounter a single narrative element. Getting that register right — through scale, lighting, and surface quality — is most of the work.`,
     modes: [
       { n: '01', title: 'Corridor architecture', sub: 'Atmospheric game space' },
@@ -863,7 +863,7 @@ function getCrawlMetrics() {
   const contentH = crawlScrollEl.scrollHeight;
   const viewportH = window.innerHeight;
 
-  const topLimit = viewportH * 3;
+  const topLimit = viewportH * 2.8;
   const startY = topLimit;
   const endY = -(contentH - viewportH * 0.82);
 
