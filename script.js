@@ -47,6 +47,20 @@ const PROJECT_DATA = {
       { n: '05', title: 'Ranged Enemy', sub: 'Distance control' },
       { n: '06', title: 'Healing Items', sub: 'Recovery system' }
     ]
+  },
+  soulslike: {
+    tag: 'Game · 2025',
+    systemsLabel: 'Game Systems',
+    process: `This project was first created as an early prototype in 2023, but at that time it remained unfinished. Recently, I returned to it and finally had the chance to turn it into a more complete playable experience.<br><br>The main focus was building a combat loop that feels heavier and more deliberate. I developed a moveset with two light attacks and four heavy combo attacks, while also adding a dodge roll so the player could avoid enemy attacks and create openings.<br><br>The overall structure is linear: the player progresses from point A to point B through a sequence of encounters. Rather than building a large world, I focused on creating a small but complete slice of a soul-like experience.`,
+    reflection: `What matters most in this project is not scale, but rhythm. Once dodge timing, attack commitment, and enemy pressure are introduced, even a short level can start to feel tense and intentional.<br><br>At its current stage, the game already forms a full loop: movement, combat, enemy encounters, and a boss at the end. At the same time, it still feels like a test space rather than a fully polished game.<br><br>If I continue developing it, I would improve enemy behavior, attack feedback, and encounter pacing so the combat feels more readable, punishing, and satisfying.`,
+    modes: [
+      { n: '01', title: 'Linear Progression', sub: 'Point A to B flow' },
+      { n: '02', title: 'Light Attacks', sub: '2-hit combat option' },
+      { n: '03', title: 'Heavy Combos', sub: '4 chained attacks' },
+      { n: '04', title: 'Dodge Roll', sub: 'Avoid enemy damage' },
+      { n: '05', title: 'Standard Enemy', sub: 'Basic encounter' },
+      { n: '06', title: 'Boss Fight', sub: 'Combat climax' }
+    ]
   }
 };
 
@@ -113,7 +127,6 @@ function idleMorph(ts) {
     const { cx, cy, r } = bd;
     const n = NOISE[blob.id];
     const dw = Math.sin(s * .90) * r * .09;
-    const dh = Math.cos(s * .70 + 1.2) * r * .04;
     const dcx = Math.sin(s * .50 + .8) * 5;
     const dty = Math.cos(s * .60) * 3;
     const asy = Math.sin(s * 1.1 + 2.0) * r * .08;
@@ -418,7 +431,7 @@ document.querySelectorAll('.blob').forEach(blob => {
 
     const works = JSON.parse(blob.dataset.works);
     worksGrid.innerHTML = works.map((w, i) => w.project
-      ? `<div class="work-card featured" data-project="${w.project}" data-play="${w.play || ''}" data-github="${w.github || ''}" data-title="${w.title}" data-desc="${w.desc || ''}" data-year="${w.year}">
+      ? `<div class="work-card featured" data-project="${w.project}" data-play="${w.play || ''}" data-github="${w.github || ''}" data-title="${w.title}" data-desc="${w.desc || ''}" data-year="${w.year}" data-img="${w.img || ''}">
            <div class="work-card-ghost">${String(i + 1).padStart(2, '0')}</div>
            <div class="work-card-body">
              <div class="work-card-title">${w.title}</div>
@@ -442,6 +455,7 @@ const projBack = document.getElementById('proj-back');
 const gameFrame = document.getElementById('game-frame');
 const gamePH = document.getElementById('game-placeholder');
 const gameExtLink = document.getElementById('game-external');
+const demoImage = document.getElementById('demo-image');
 
 function openProject(card) {
   const projectId = card.dataset.project || '';
@@ -450,6 +464,7 @@ function openProject(card) {
   const title = card.dataset.title || '';
   const desc = card.dataset.desc || '';
   const year = card.dataset.year || '';
+  const img = card.dataset.img || '';
   const data = PROJECT_DATA[projectId] || {};
 
   document.getElementById('proj-title').textContent = title;
@@ -474,17 +489,28 @@ function openProject(card) {
   }
 
   gameFrame.src = '';
+  demoImage.classList.remove('active');
+  demoImage.removeAttribute('src');
+
   gamePH.classList.remove('hidden');
   gameExtLink.href = play || github;
-  gameExtLink.textContent = play ? 'Open in new tab ↗' : 'View on GitHub ↗';
+  gameExtLink.textContent = play && play !== '#' ? 'Open in new tab ↗' : 'View on GitHub ↗';
 
-  if (play) {
+  if (play && play !== '#') {
     setTimeout(() => {
       gameFrame.src = play;
       const hide = () => gamePH.classList.add('hidden');
       gameFrame.onload = hide;
       setTimeout(hide, 5000);
     }, 600);
+  } else if (img) {
+    demoImage.src = img;
+    demoImage.classList.add('active');
+    gamePH.querySelector('span').textContent = 'Project preview';
+    gameExtLink.textContent = github && github !== '#' ? 'View on GitHub ↗' : 'Preview only';
+  } else {
+    gamePH.querySelector('span').textContent = 'Playable demo not embedded';
+    gameExtLink.textContent = github && github !== '#' ? 'View on GitHub ↗' : 'Preview unavailable';
   }
 
   projPanel.classList.add('active');
@@ -494,6 +520,10 @@ function closeProject() {
   projPanel.classList.remove('active');
   setTimeout(() => {
     gameFrame.src = '';
+    demoImage.classList.remove('active');
+    demoImage.removeAttribute('src');
+    gamePH.classList.remove('hidden');
+    gamePH.querySelector('span').textContent = 'Loading game…';
   }, 700);
 }
 

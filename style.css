@@ -21,7 +21,6 @@ html, body {
   cursor: none;
 }
 
-/* ─── Custom Cursor ─── */
 #cursor {
   position: fixed;
   width: 5px; height: 5px;
@@ -45,7 +44,6 @@ html, body {
               height .45s cubic-bezier(.23,1,.32,1);
 }
 
-/* ─── Header ─── */
 header {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -76,14 +74,12 @@ nav a {
 }
 nav a:hover { opacity: .85; }
 
-/* ─── Scene ─── */
 .scene {
   position: relative;
   width: 100vw; height: 100vh;
   overflow: visible;
 }
 
-/* Background watermark */
 .watermark {
   position: absolute;
   top: 50%; left: 50%;
@@ -100,7 +96,6 @@ nav a:hover { opacity: .85; }
   text-align: center;
 }
 
-/* Tagline below watermark */
 .tagline {
   position: absolute;
   top: calc(50% + clamp(46px, 7vw, 100px));
@@ -115,7 +110,6 @@ nav a:hover { opacity: .85; }
   pointer-events: none;
 }
 
-/* Very thin horizontal veil */
 .veil-line {
   position: absolute;
   top: 50%;
@@ -129,7 +123,6 @@ nav a:hover { opacity: .85; }
   pointer-events: none;
 }
 
-/* Tiny scatter dots */
 .dot {
   position: absolute;
   border-radius: 50%;
@@ -137,7 +130,6 @@ nav a:hover { opacity: .85; }
   pointer-events: none;
 }
 
-/* Bottom hint */
 .hint {
   position: fixed;
   bottom: 38px; left: 50%;
@@ -156,7 +148,6 @@ nav a:hover { opacity: .85; }
   50%      { opacity: .08; }
 }
 
-/* ─── Blobs ─── */
 .blobs { position: absolute; inset: 0; }
 
 .blob {
@@ -173,19 +164,16 @@ nav a:hover { opacity: .85; }
   justify-content: center;
 }
 
-/* SVG overflow:visible lets the squash splat extend beyond viewBox bounds */
 .blob-shape svg {
   overflow: visible;
   display: block;
 }
 
-/* Hover: brightness lift only — all shape changes handled by JS */
 .blob:hover .blob-shape svg {
   filter: brightness(1.09);
   transition: filter .35s ease;
 }
 
-/* Text inside blob */
 .blob-inner {
   position: absolute;
   text-align: center;
@@ -215,7 +203,6 @@ nav a:hover { opacity: .85; }
 .blob:hover .blob-num   { opacity: 0; }
 .blob:hover .blob-label { opacity: .75; }
 
-/* Float drift animations (Y position only; shape handled entirely by JS) */
 @keyframes fa {
   0%,100% { transform: translateY(0) rotate(0deg); }
   32%     { transform: translateY(-13px) rotate(1.1deg); }
@@ -237,13 +224,11 @@ nav a:hover { opacity: .85; }
   62%     { transform: translateY(7px) rotate(-.9deg); }
 }
 
-/* Entry fade-in (blobs start at opacity:0 in HTML) */
 @keyframes blob-enter {
   from { opacity: 0; transform: translateY(28px) scale(.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ─── Content Panel ─── */
 .panel {
   position: fixed; inset: 0;
   z-index: 500;
@@ -254,7 +239,7 @@ nav a:hover { opacity: .85; }
   pointer-events: all;
   opacity: 1;
 }
-/* ─── Colour flood canvas ─── JS RAF draws tide waves each frame ─── */
+
 #color-flood {
   position: fixed;
   inset: 0;
@@ -263,15 +248,12 @@ nav a:hover { opacity: .85; }
   display: block;
 }
 
-/* panel-bg is transparent — the flood canvas beneath (z:480) provides the colour.
-   This prevents any solid rectangle flashing over the still-running tide animation. */
 .panel-bg {
   position: absolute;
   inset: 0;
   background: transparent;
 }
 
-/* Colour strip at very top */
 .panel-strip {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -283,7 +265,6 @@ nav a:hover { opacity: .85; }
 }
 .panel.active .panel-strip { transform: scaleX(1); }
 
-/* Close button */
 .close-btn {
   position: fixed;
   top: 42px; right: 96px;
@@ -307,7 +288,6 @@ nav a:hover { opacity: .85; }
   transition: opacity .4s .85s ease;
 }
 
-/* Panel scrollable content */
 .panel-content {
   position: relative; z-index: 1;
   height: 100%;
@@ -360,7 +340,6 @@ nav a:hover { opacity: .85; }
   margin-top: 6px;
 }
 
-/* Works grid */
 .works-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -419,7 +398,6 @@ nav a:hover { opacity: .85; }
   position: relative;
 }
 
-/* ─── Grain ─── */
 .grain {
   position: fixed; inset: 0;
   pointer-events: none;
@@ -428,10 +406,6 @@ nav a:hover { opacity: .85; }
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
 }
-/* ═══════════════════════════════════════════════════════════
-   Project Detail Panel
-   Slides in from the right over the category panel.
-   ═══════════════════════════════════════════════════════════ */
 
 .proj-panel {
   position: fixed; inset: 0;
@@ -447,7 +421,6 @@ nav a:hover { opacity: .85; }
   pointer-events: all;
 }
 
-/* Back button */
 .proj-back {
   position: absolute;
   top: 42px; left: 96px;
@@ -471,7 +444,6 @@ nav a:hover { opacity: .85; }
 }
 .proj-back:hover { opacity: .9 !important; }
 
-/* Two-column layout */
 .proj-layout {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -487,7 +459,6 @@ nav a:hover { opacity: .85; }
   transform: translateY(0);
 }
 
-/* ── Left: game iframe ── */
 .proj-play-col {
   display: flex;
   flex-direction: column;
@@ -508,7 +479,22 @@ nav a:hover { opacity: .85; }
   width: 100%; height: 100%;
   border: none;
   display: block;
+  z-index: 1;
 }
+
+.demo-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  z-index: 2;
+}
+.demo-image.active {
+  display: block;
+}
+
 .game-frame-placeholder {
   position: absolute; inset: 0;
   display: flex;
@@ -524,8 +510,10 @@ nav a:hover { opacity: .85; }
   pointer-events: none;
   opacity: 1;
   transition: opacity .4s;
+  z-index: 3;
 }
 .game-frame-placeholder.hidden { opacity: 0; pointer-events: none; }
+
 #game-external {
   font-family: 'Cormorant Garamond', serif;
   font-size: 15px;
@@ -547,7 +535,6 @@ nav a:hover { opacity: .85; }
   opacity: .22;
 }
 
-/* ── Right: info column ── */
 .proj-info-col {
   display: flex;
   flex-direction: column;
@@ -596,7 +583,6 @@ nav a:hover { opacity: .85; }
 }
 .proj-gh-link:hover { opacity: .85; }
 
-/* Modes list */
 .proj-modes-label {
   font-size: 10px;
   letter-spacing: .38em;
@@ -637,7 +623,6 @@ nav a:hover { opacity: .85; }
   font-size: 13px;
 }
 
-/* Featured work card inside the works grid */
 .work-card.featured {
   grid-column: 1 / -1;
   aspect-ratio: unset;
