@@ -92,7 +92,7 @@ const PROJECT_DATA = {
     tag: 'Design · 2023 · Short Film',
     systemsLabel: 'About the Work',
     noGithub: true,
-    gallery: ['images/4.png', 'images/5.png'],
+    gallery: ['images/F1.png','images/F2.png','images/F3.png','images/F4.png','images/F5.png'],
     process: `Short film production with classmates — I worked primarily on camera operation and on-set framing decisions. The process was less about following a plan and more about staying attentive to what the scene was actually doing: when to hold a shot, when to move, when a quieter choice would carry more weight than a dynamic one.<br><br>The concert and interior scenes in particular required working quickly in low light with available sources — which made exposure and composition decisions feel immediate and consequential.`,
     reflection: `What I took away from this work was a sharper sense of when to get out of the way of what is happening in front of the camera. Good cinematography is often invisible — and that invisibility is the result of many deliberate choices.`,
     modes: [
