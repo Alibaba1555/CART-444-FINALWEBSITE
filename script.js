@@ -863,8 +863,8 @@ function getCrawlMetrics() {
   const contentH = crawlScrollEl.scrollHeight;
   const viewportH = window.innerHeight;
 
-  const topLimit = viewportH * 3.22;
-  const startY = viewportH * 0.68;
+  const topLimit = viewportH * 3;
+  const startY = topLimit;
   const endY = -(contentH - viewportH * 0.82);
 
   return { topLimit, startY, endY };
@@ -879,7 +879,7 @@ function resetCrawl() {
   const { startY } = getCrawlMetrics();
   crawlPos = startY;
   crawlTarget = startY;
-  crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
+  crawlScrollEl.style.transform = `translateY(${startY}px)`;
 }
 
 navAbout.addEventListener('click', e => {
