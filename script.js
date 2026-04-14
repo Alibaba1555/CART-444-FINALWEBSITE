@@ -77,21 +77,21 @@ const PROJECT_DATA = {
 const BD = {
   'blob-photography': { cx: 89, cy: 124, r: 78 },
   'blob-design':      { cx: 107, cy: 110, r: 88 },
-  'blob-film':        { cx: 79, cy: 128, r: 68 },
+  'blob-other':       { cx: 79, cy: 128, r: 68 },
   'blob-game':        { cx: 100, cy: 115, r: 83 }
 };
 
 const NOISE = {
   'blob-photography': [[13,1.3,0.0],[9,2.3,1.2],[6,0.8,2.5],[11,3.0,0.9]],
   'blob-design':      [[15,1.1,1.4],[7,2.5,0.3],[10,0.9,3.0],[6,1.8,1.8]],
-  'blob-film':        [[11,1.6,2.8],[8,2.0,0.7],[9,0.7,1.4],[14,2.6,3.4]],
+  'blob-other':       [[11,1.6,2.8],[8,2.0,0.7],[9,0.7,1.4],[14,2.6,3.4]],
   'blob-game':        [[10,1.9,0.7],[13,1.0,2.1],[7,2.7,0.5],[9,1.5,1.9]]
 };
 
 const FLOAT_ANIM = {
   'blob-photography': 'fa 3.9s 0s ease-in-out infinite',
   'blob-design':      'fb 4.3s 0s ease-in-out infinite',
-  'blob-film':        'fc 3.6s 0s ease-in-out infinite',
+  'blob-other':       'fc 3.6s 0s ease-in-out infinite',
   'blob-game':        'fd 4.7s 0s ease-in-out infinite'
 };
 
@@ -440,21 +440,46 @@ document.querySelectorAll('.blob').forEach(blob => {
     panelCount.textContent = String(JSON.parse(blob.dataset.works).length).padStart(2, '0') + ' Works';
 
     const works = JSON.parse(blob.dataset.works);
-    worksGrid.innerHTML = works.map((w, i) => w.project
-      ? `<div class="work-card featured" data-project="${w.project}" data-play="${w.play || ''}" data-github="${w.github || ''}" data-title="${w.title}" data-desc="${w.desc || ''}" data-year="${w.year}" data-img="${w.img || ''}">
-           <div class="work-card-ghost">${String(i + 1).padStart(2, '0')}</div>
-           <div class="work-card-body">
-             <div class="work-card-title">${w.title}</div>
-             <div class="work-card-year">${w.year}</div>
-             <div class="work-card-cta">View project + play ↗</div>
-           </div>
-         </div>`
-      : `<div class="work-card">
-           <div class="work-card-ghost">${String(i + 1).padStart(2, '0')}</div>
-           <div class="work-card-title">${w.title}</div>
-           <div class="work-card-year">${w.year}</div>
-         </div>`
-    ).join('');
+    // Collect all photo items for the viewer
+    const photoItems = works.filter(w => w.photo).map(w => w.photo);
+
+    worksGrid.innerHTML = works.map((w, i) => {
+      const n = String(i + 1).padStart(2, '0');
+      if (w.photo) {
+        return `<div class="work-card photo-card" data-photo-index="${i}"
+                     style="background-image:url('${w.photo}')">
+                  <div class="photo-card-overlay">
+                    <span class="photo-card-num">${n}</span>
+                    <span class="photo-card-cta">View ↗</span>
+                  </div>
+                </div>`;
+      }
+      if (w.project) {
+        return `<div class="work-card featured" data-project="${w.project}"
+                     data-play="${w.play || ''}" data-github="${w.github || ''}"
+                     data-title="${w.title}" data-desc="${w.desc || ''}"
+                     data-year="${w.year}" data-img="${w.img || ''}">
+                  <div class="work-card-ghost">${n}</div>
+                  <div class="work-card-body">
+                    <div class="work-card-title">${w.title}</div>
+                    <div class="work-card-year">${w.year}</div>
+                    <div class="work-card-cta">View project + play ↗</div>
+                  </div>
+                </div>`;
+      }
+      return `<div class="work-card">
+                <div class="work-card-ghost">${n}</div>
+                <div class="work-card-title">${w.title}</div>
+                <div class="work-card-year">${w.year}</div>
+              </div>`;
+    }).join('');
+
+    // Wire photo card clicks → open photo viewer
+    if (photoItems.length > 0) {
+      worksGrid.querySelectorAll('.photo-card').forEach(card => {
+        card.addEventListener('click', () => openPhotoViewer(photoItems, parseInt(card.dataset.photoIndex)));
+      });
+    }
 
     flyBlob(blob);
   });
@@ -625,6 +650,70 @@ document.addEventListener('click', e => {
   const card = e.target.closest('.work-card.featured');
   if (card) openProject(card);
 });
+
+
+// ── Photo viewer panel ───────────────────────────────────────
+const photoPanel   = document.getElementById('photo-panel');
+const photoBack    = document.getElementById('photo-back');
+const photoMainImg = document.getElementById('photo-main-img');
+const photoPrev    = document.getElementById('photo-prev');
+const photoNext    = document.getElementById('photo-next');
+const photoThumbRow= document.getElementById('photo-thumb-row');
+
+let photoList  = [];
+let photoIndex = 0;
+
+function showPhoto(idx) {
+  photoIndex = ((idx % photoList.length) + photoList.length) % photoList.length;
+  photoMainImg.style.opacity = '0';
+  photoMainImg.onload = () => { photoMainImg.style.opacity = '1'; };
+  photoMainImg.src = photoList[photoIndex];
+  photoThumbRow.querySelectorAll('.ph-thumb').forEach((t, i) => {
+    t.classList.toggle('active', i === photoIndex);
+  });
+}
+
+function openPhotoViewer(photos, startIdx) {
+  photoList = photos;
+
+  // Build thumbnails
+  photoThumbRow.innerHTML = photos.map((src, i) =>
+    `<div class="ph-thumb${i === startIdx ? ' active' : ''}" data-i="${i}">
+       <img src="${src}" alt="" />
+     </div>`
+  ).join('');
+  photoThumbRow.querySelectorAll('.ph-thumb').forEach(t => {
+    t.addEventListener('click', () => showPhoto(parseInt(t.dataset.i)));
+  });
+
+  photoMainImg.src = '';
+  photoMainImg.style.opacity = '0';
+  photoPanel.classList.add('active');
+  setTimeout(() => showPhoto(startIdx), 80);
+}
+
+photoBack.addEventListener('click', () => {
+  photoPanel.classList.remove('active');
+  setTimeout(() => {
+    photoMainImg.src = '';
+    photoThumbRow.innerHTML = '';
+    photoList = [];
+  }, 700);
+});
+
+photoPrev.addEventListener('click', () => showPhoto(photoIndex - 1));
+photoNext.addEventListener('click', () => showPhoto(photoIndex + 1));
+
+// Keyboard nav when photo panel is open
+document.addEventListener('keydown', e => {
+  if (!photoPanel.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft')  showPhoto(photoIndex - 1);
+  if (e.key === 'ArrowRight') showPhoto(photoIndex + 1);
+  if (e.key === 'Escape')     photoBack.click();
+});
+
+photoBack.addEventListener('mouseenter', () => { ring.style.width='50px'; ring.style.height='50px'; });
+photoBack.addEventListener('mouseleave', () => { ring.style.width='34px'; ring.style.height='34px'; });
 
 closeBtn.addEventListener('click', () => {
   const blob = activeBlob;

@@ -51,12 +51,9 @@
         data-category="Photography"
         data-color="#789262"
         data-works='[
-          {"title":"Untitled Series No. 1","year":"2024"},
-          {"title":"Winter Light Study","year":"2024"},
-          {"title":"Portrait, Berlin","year":"2023"},
-          {"title":"Still Life with Glass","year":"2023"},
-          {"title":"Landscape, Morning","year":"2022"},
-          {"title":"Archive 12–18","year":"2021"}
+          {"title":"1","year":"2025","photo":"images/1.png"},
+          {"title":"2","year":"2025","photo":"images/2.png"},
+          {"title":"3","year":"2025","photo":"images/3.png"}
         ]'>
         <div class="blob-shape">
           <svg width="258" height="362" viewBox="0 0 178 250" fill="none" style="overflow:visible">
@@ -96,21 +93,16 @@
         </div>
       </div>
 
-      <div class="blob" id="blob-film"
+      <div class="blob" id="blob-other"
         style="
           left: 56%; top: 33%;
           opacity: 0;
           animation: blob-enter .9s .55s ease forwards, fc 3.6s 1.5s ease-in-out infinite;
         "
-        data-category="Film"
+        data-category="Other"
         data-color="#611e12"
         data-works='[
-          {"title":"Short, 2024","year":"2024"},
-          {"title":"Documentary Fragment","year":"2023"},
-          {"title":"Collaborative Loop","year":"2023"},
-          {"title":"Movement Study","year":"2022"},
-          {"title":"Archival Edit","year":"2022"},
-          {"title":"Silent, 16mm","year":"2021"}
+          {"title":"Coming soon","year":"2025"}
         ]'>
         <div class="blob-shape">
           <svg width="229" height="374" viewBox="0 0 158 258" fill="none" style="overflow:visible">
@@ -118,7 +110,7 @@
           </svg>
           <div class="blob-inner">
             <span class="blob-num">03</span>
-            <span class="blob-label">Film</span>
+            <span class="blob-label">Other</span>
           </div>
         </div>
       </div>
@@ -235,6 +227,38 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+
+  <!-- ── Photo viewer panel ── -->
+  <div class="photo-panel" id="photo-panel">
+    <button class="photo-back" id="photo-back">← Photography</button>
+
+    <div class="photo-viewer">
+      <div class="photo-main-wrap">
+        <img id="photo-main-img" src="" alt="" />
+        <button class="photo-nav photo-prev" id="photo-prev">&#8592;</button>
+        <button class="photo-nav photo-next" id="photo-next">&#8594;</button>
+      </div>
+
+      <div class="photo-meta-col">
+        <div class="photo-statement-label">Artist Statement</div>
+        <p class="photo-statement-text">
+          Through photography, I seek to capture the traces of human presence — exploring identity and memory as they quietly unfold within space. Rather than focusing on the individual directly, my work is drawn to what remains: subtle marks, atmospheres, and moments that suggest a life once there.
+          <br><br>
+          Warm light, overlooked corners, and fleeting encounters become ways of holding onto something otherwise passing. My images attempt to preserve not just what is seen, but the fragile evidence of being.
+        </p>
+
+        <div class="photo-statement-label" style="margin-top: 32px;">On Beginning</div>
+        <p class="photo-statement-text">
+          I started photography in December 2025. From the very first days, it felt less like learning a skill and more like finally having a way to look properly at the world. Whenever I had free time, I would go outside and record whatever caught my attention — a corner of light, a surface worn by use, a moment that felt worth keeping.
+          <br><br>
+          These early photographs are not finished works. They are evidence of paying attention.
+        </p>
+
+        <div class="photo-thumb-row" id="photo-thumb-row"></div>
+      </div>
     </div>
   </div>
 

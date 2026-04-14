@@ -717,3 +717,189 @@ nav a:hover { opacity: .85; }
   background: rgba(5,4,0,.75);
   opacity: 1 !important;
 }
+/* ═══════════════════════════════════════════════════════════
+   Photo cards in works grid
+   ═══════════════════════════════════════════════════════════ */
+.work-card.photo-card {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255,255,255,.14);
+  padding: 0;
+  overflow: hidden;
+  cursor: none;
+  position: relative;
+}
+.photo-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(5,4,0,.65) 0%, transparent 55%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 18px 20px;
+  opacity: 0;
+  transition: opacity .35s;
+}
+.work-card.photo-card:hover .photo-card-overlay { opacity: 1; }
+.photo-card-num {
+  font-size: 11px;
+  letter-spacing: .28em;
+  color: var(--cream);
+  opacity: .5;
+}
+.photo-card-cta {
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--cream);
+  opacity: .75;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Photo viewer panel
+   Full-screen, slides in from left (opposite to proj-panel)
+   ═══════════════════════════════════════════════════════════ */
+.photo-panel {
+  position: fixed; inset: 0;
+  z-index: 600;
+  background: #050400;
+  transform: translateX(-100%);
+  transition: transform .68s cubic-bezier(.76,0,.24,1);
+  overflow: hidden;
+  pointer-events: none;
+}
+.photo-panel.active {
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+.photo-back {
+  position: absolute;
+  top: 42px; left: 96px;
+  background: none; border: none;
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  cursor: none;
+  z-index: 10;
+  padding: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s;
+}
+.photo-panel.active .photo-back {
+  opacity: .38;
+  pointer-events: all;
+  transition: opacity .4s .55s ease;
+}
+.photo-back:hover { opacity: .9 !important; }
+
+.photo-viewer {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  height: 100%;
+  padding: 88px 96px 48px;
+  gap: 52px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .55s .35s ease, transform .55s .35s ease;
+}
+.photo-panel.active .photo-viewer {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Main image area */
+.photo-main-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.07);
+}
+#photo-main-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+  transition: opacity .45s ease;
+}
+
+/* Prev / next nav arrows */
+.photo-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(5,4,0,.5);
+  border: 1px solid rgba(255,255,255,.18);
+  color: var(--cream);
+  font-size: 20px;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none;
+  opacity: 0;
+  transition: opacity .25s, background .25s;
+}
+.photo-main-wrap:hover .photo-nav { opacity: .65; }
+.photo-nav:hover { opacity: 1 !important; background: rgba(5,4,0,.82); }
+.photo-prev { left: 16px; }
+.photo-next { right: 16px; }
+
+/* Right info column */
+.photo-meta-col {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-top: 4px;
+  scrollbar-width: none;
+}
+.photo-meta-col::-webkit-scrollbar { display: none; }
+
+.photo-statement-label {
+  font-size: 10px;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  color: var(--cream);
+  opacity: .28;
+  margin-bottom: 16px;
+}
+.photo-statement-text {
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--cream);
+  opacity: .55;
+  margin-bottom: 8px;
+}
+
+/* Thumbnail strip */
+.photo-thumb-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 32px;
+}
+.ph-thumb {
+  width: 68px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  opacity: .4;
+  transition: opacity .25s, border-color .25s;
+  cursor: none;
+  flex-shrink: 0;
+}
+.ph-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.ph-thumb.active,
+.ph-thumb:hover { opacity: 1; border-color: rgba(255,255,255,.5); }
