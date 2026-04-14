@@ -52,7 +52,7 @@ const PROJECT_DATA = {
     tag: 'Design · 2022 · Stable Diffusion',
     systemsLabel: 'About the Work',
     noGithub: true,
-    gallery: ['images/4.png', 'images/5.png'],
+    gallery: ['images/La1.png','images/La2.png'],
     process: `I was among the first students in the program to submit a design project made with generative AI — at a time when most people were still unfamiliar with the tools. Rather than using a generic model, I locally deployed Stable Diffusion and trained my own fine-tuned weights to achieve a specific visual register: the texture and weight of classical oil painting, applied to the epic narrative of La Chanson de Roland.<br><br>Each spread was treated as a composition problem — how to give visual form to a medieval poem without illustration becoming literal. The AI was a tool for translation, not automation.`,
     reflection: `The project earned strong results, but more importantly it changed how I understood design research. Fine-tuning a model is a design act: every training decision is a curatorial one, shaping what the system considers plausible or beautiful.<br><br>Looking back, I would push further into the relationship between text and image — using the poem's rhythm and line breaks as compositional logic, not just its narrative content.`,
     modes: [
@@ -66,7 +66,7 @@ const PROJECT_DATA = {
     tag: 'Design · 2023',
     systemsLabel: 'About the Work',
     noGithub: true,
-    gallery: ['images/5.png'],
+    gallery: ['images/D1.png','images/D2.png'],
     process: `The Roberto Rossellini poster started from an interest in how film posters from the 1950s–70s used typography as a structural element rather than decoration. The challenge was to make something that felt of its era — heavy serif type, collaged photography — without becoming pastiche.<br><br>The Chinese character poster explores the same tension in a different tradition: using ink silhouettes of a figure against a field of solid colour, where the negative space carries as much weight as the mark.`,
     reflection: `Graphic design, for me, is mostly about restraint — deciding what not to include. Both posters taught me that strong work often comes from committing fully to a single compositional idea and removing everything that dilutes it.`,
     modes: [
@@ -79,7 +79,7 @@ const PROJECT_DATA = {
     tag: 'Design · 2023 · Adobe Animate',
     systemsLabel: 'About the Work',
     noGithub: true,
-    gallery: ['images/5.png'],
+    gallery: ['images/P1.png'],
     process: `The shadow puppet animation was made in Adobe Animate, drawing directly from the 皮影戏 tradition — a Chinese performance form where articulated leather figures are manipulated behind a lit screen.<br><br>The characters were illustrated in an ink-wash register with hand-keyed movement. The goal was not to simulate physical puppetry accurately, but to preserve its quality of imprecision — the slight hesitation before a gesture, the way a sleeve doesn't quite follow the arm.`,
     reflection: `The most interesting constraint was the background: painting an ink-wash landscape means accepting that the image will never be exact. That looseness became the visual identity of the piece. Working within a traditional form also raised questions about what it means to adapt cultural material — how much to preserve, how much to translate.`,
     modes: [
@@ -105,7 +105,7 @@ const PROJECT_DATA = {
     tag: 'Design · 2024 · Environment & 3D',
     systemsLabel: 'About the Work',
     noGithub: true,
-    gallery: ['images/4.png'],
+    gallery: ['images/E1.png'],
     process: `These pieces explore spatial storytelling through environment design — dark corridor architecture, game space atmosphere, and a voxel-style ship. The corridors were built to communicate a specific feeling before any narrative context: something industrial, confined, and slightly worn.<br><br>The voxel ship model works differently — the grid-based aesthetic creates a visual language that is simultaneously retro and abstract, letting the glowing yellow elements read as light sources or collectibles depending on what the viewer brings to it.`,
     reflection: `Environment design taught me that space communicates before story does. A player or viewer will have already formed an emotional register from the space before they encounter a single narrative element. Getting that register right — through scale, lighting, and surface quality — is most of the work.`,
     modes: [
