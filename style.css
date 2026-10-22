@@ -1324,3 +1324,22 @@ nav a:hover { opacity: .85; }
  .cv-sticky {position:relative;height:720px;}
  .cv-card {will-change:auto;}
 }
+
+/* Full-width CV reader, driven by the same outer scroll gesture. */
+.reading-mode .cv-quick-download {display:none;}
+.cv-perspective {padding-top:70px;perspective:1700px;}
+.cv-pages {width:100%;will-change:transform;}
+.cv-card .cv-pages img {display:block;width:100%;height:auto;aspect-ratio:612 / 792;object-fit:contain;background:white;}
+.cv-card .cv-pages img+img {margin-top:24px;}
+.cv-card {flex-shrink:0;}
+.cv-download-note {bottom:12%;}
+@media(prefers-reduced-motion:reduce) {
+ .cv-sticky {position:relative;height:auto;max-height:none;overflow:visible;display:block;min-height:0;}
+ .cv-perspective {padding:0;height:auto;}
+ .cv-pages {will-change:auto;}
+ .cv-heading,.cv-scroll-note,.cv-download-note {display:none;}
+ .reading-mode .cv-quick-download {display:block;}
+}
+
+.cv-static-download {display:none;text-align:center;padding:35px;color:var(--warm);}
+@media(prefers-reduced-motion:reduce) {.reading-mode .cv-static-download {display:block;}}
