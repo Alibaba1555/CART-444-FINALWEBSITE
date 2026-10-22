@@ -18,17 +18,29 @@ document.addEventListener('mousemove', e => {
 })();
 
 const PROJECT_DATA = {
+  accessibleweather: {
+    tag: 'Accessible Interaction Design · 2026 · Work in Progress',
+    noGithub: true,
+    gallery: ['images/weather-interface.png', 'images/weather-controller.png', 'images/weather-sensor.png', 'images/weather-concept.png'],
+    captions: ['Interface prototype — large type, high contrast, and weather readings; the local gas sensor is not connected to this interface yet.', 'Hardware concept — proposed tactile controls for speech, volume, navigation, and confirmation.', 'BME680 test — local sensor readings captured in the terminal; integration is in progress.', 'AI-assisted concept illustration — an imagined interaction with the device, not a photograph of a completed prototype.'],
+    process: `Our team is developing the project around the needs of a user with a visual impairment. The interface uses large type, strong contrast, and a simple hierarchy to make weather readings easier to find. The hardware concept explores a large speak button, volume controls, and tactile navigation with spoken feedback.<br><br>The images document separate parts of the work: a weather interface prototype, an annotated controller concept, and a BME680 sensor test. The final image is an AI-assisted illustration of the intended interaction. These components are still being brought together.`,
+    reflection: `Designing for a specific access need means reconsidering what can be read, felt, and heard. A visually simple interface is only one part of the experience; controls and feedback also need to be clear and predictable. The next steps are hardware and software integration, followed by evaluation with the intended user and further refinement.`,
+    modes: []
+  },
   archipelago: {
     tag: 'Interaction Design · 2026 · Work in Progress',
-    noGithub: true,
+    noGithub: false,
+    github: 'https://github.com/Jimmy-Le/CART470Project',
+    githubLabel: 'Team Repository ↗',
     gallery: ['images/island-prototype.png', 'images/island-team.png'],
-    process: `I explored water animation and a wet-paper visual texture, then tested how an island name could emerge from the water after selection. Seagull Island is a temporary test name. Slight differences in letter position and rotation suggest floating, while the surrounding currents leave space for the text.<br><br>The first image shows my standalone water and naming experiment. The second shows the shared team interface, which provides the context for the next integration step.`,
+    process: `I explored water animation and a wet-paper visual texture, then tested how an island name could emerge from the water after selection. Seagull Island is a temporary test name. Slight differences in letter position and rotation suggest floating, while the surrounding currents leave space for the text.<br><br>The linked repository contains our shared team project. My contribution focuses on water animation and island-name interactions.<br><br>The first image shows my standalone water and naming experiment. The second shows the shared team interface, which provides the context for the next integration step.`,
     reflection: `The animation needs to support orientation without distracting from documentary content. The next step is to adapt the experiment to the shared map structure, then test readability, island switching, performance, and a reduced-motion alternative.`,
     modes: [],
     resource: 'https://alibaba1555.github.io/CART-470-Project-Journal/',
     resourceLabel: 'Read process journal ↗'
   },
   cornerset: {
+    journal: 'https://alibaba1555.github.io/CART-498-Project-Journal/#week-05',
     tag: 'UX & Interface Design · 2026 · Work in Progress',
     noGithub: true,
     process: `The prototype explores two connected journeys: a performer setting up a street performance and an audience member discovering nearby music. Iterations focus on map filtering, performer profiles, short audio previews, and the flow from discovery to support.`,
@@ -208,6 +220,7 @@ const PROJECT_DATA = {
 
 // Only confirmed project contexts are displayed; unknown fields remain omitted.
 const PROJECT_FACTS = {
+  accessibleweather: {type: 'Group project', context: 'Coursework · CART 484', role: 'Interface prototyping and accessible information presentation within a collaborative hardware and software project', tools: 'HTML · CSS · JavaScript · Raspberry Pi · BME680', completion: 'Mid-December 2026'},
   archipelago: {completion: 'Mid-December 2026', type: 'Group project', context: 'Coursework · CART 470', role: 'Water animation, visual material experiments, and island-name interaction prototype', tools: 'HTML · CSS · JavaScript'},
   cornerset: {completion: 'Mid-December 2026', context: 'Coursework · CART 498', role: 'UX design, user flows, interface design, and interactive prototyping', tools: 'HTML · CSS · JavaScript'},
 
@@ -277,24 +290,17 @@ function smoothPath(pts) {
   return d + 'Z';
 }
 
+function idleBlobPoints(id, t) {
+  const {cx,cy,r} = BD[id];
+  const idx = ['blob-photography','blob-design','blob-other','blob-game'].indexOf(id);
+  const [spd,ph] = [[1.8,0],[2.1,1.4],[1.5,2.8],[2.4,.7]][idx];
+  const v=t*spd+ph;
+  return blobPts(cx+Math.sin(v*.5+.8)*5,cy+Math.cos(v*.6)*3,
+    r+Math.sin(v*.9)*r*.09+Math.sin(v*1.1+2)*r*.08,NOISE[id],t);
+}
 function idleMorph(ts) {
-  const t = ts / 1000;
   document.querySelectorAll('.blob:not(.flying-js)').forEach(blob => {
-    const bd = BD[blob.id];
-    if (!bd) return;
-    const idx = ['blob-photography','blob-design','blob-other','blob-game'].indexOf(blob.id);
-    const [spd, ph] = [[1.8,0.0],[2.1,1.4],[1.5,2.8],[2.4,0.7]][idx];
-    const s = t * spd + ph;
-    const { cx, cy, r } = bd;
-    const n = NOISE[blob.id];
-    const dw = Math.sin(s * .90) * r * .09;
-    const dcx = Math.sin(s * .50 + .8) * 5;
-    const dty = Math.cos(s * .60) * 3;
-    const asy = Math.sin(s * 1.1 + 2.0) * r * .08;
-    blob.querySelector('path').setAttribute(
-      'd',
-      smoothPath(blobPts(cx + dcx, cy + dty, r + dw + asy, n, t, 1, 1))
-    );
+    if(BD[blob.id]) blob.querySelector('path').setAttribute('d',smoothPath(idleBlobPoints(blob.id,ts/1000)));
   });
   requestAnimationFrame(idleMorph);
 }
@@ -448,82 +454,64 @@ let lastFlight = {};
 
 function flyBlob(blob) {
   const id = blob.id;
-  const bd = BD[id];
   const pathEl = blob.querySelector('path');
-
-  const rectBefore = blob.getBoundingClientRect();
-  blob.classList.add('flying-js');
-  blob.style.opacity = '1';
-  blob.style.animation = 'none';
-  void blob.offsetHeight;
-
-  const rectSnap = blob.getBoundingClientRect();
-  const floatDy = rectBefore.top - rectSnap.top;
-  const DURATION = 1600;
-  const totalTravel = rectBefore.top + rectBefore.height / 2 + 120;
-
+  const rect = blob.getBoundingClientRect();
+  // Capture the complete floating transform before disabling CSS animation.
+  const current = getComputedStyle(blob).transform;
+  const matrix = new DOMMatrix(current === 'none' ? undefined : current);
+  const floatDy = matrix.m42;
+  const totalTravel = rect.bottom + 100;
   const color = blob.dataset.color;
-  const n = parseInt(color.slice(1), 16);
-  const r = (n >> 16) & 255;
-  const g = (n >> 8) & 255;
-  const b = n & 255;
-  const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-  const k = lum >= 160 ? 0.74 : 1.0;
-  const bgColor = `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`;
-
-  lastFlight = { id, floatDy, totalTravel, bgColor };
-  panelStrip.style.background = 'rgba(255,255,255,.38)';
-
-  const eIO = t => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-  const eOut = t => 1 - (1 - t) * (1 - t);
-  const eIn = t => t * t;
-  const start = performance.now();
-  let floodStarted = false;
-
+  const n = parseInt(color.slice(1),16);
+  const r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  const k=(.299*r+.587*g+.114*b)>=160?.74:1;
+  const bgColor=id==='blob-photography'?'#090805':`rgb(${Math.round(r*k)},${Math.round(g*k)},${Math.round(b*k)})`;
+  lastFlight={id,floatDy,totalTravel,bgColor};
+  blob.classList.add('flying-js');
+  blob.style.transform=matrix.toString();
+  blob.style.animation='none';
+  blob.style.opacity='1';
+  panelStrip.style.background='rgba(255,255,255,.38)';
+  const duration=1050;
+  const start=performance.now();
+  let floodStarted=false;
   function frame(now) {
-    const prog = Math.min((now - start) / DURATION, 1);
-    const tSec = (now - start) / 1000;
-
-    blob.style.transform = `translateY(${floatDy - eIO(prog) * totalTravel}px)`;
-    if (prog > .86) blob.style.opacity = String(1 - (prog - .86) / .14);
-
-    let sx, sy;
-    if (prog < .06) {
-      const q = Math.sin((prog / .06) * Math.PI);
-      sx = 1 + q * .14;
-      sy = 1 - q * .11;
-    } else if (prog < .68) {
-      const q = eOut((prog - .06) / .62);
-      sx = 1 - q * .25;
-      sy = 1 + q * .32;
-    } else if (prog < .78) {
-      const q = eIn((prog - .68) / .10);
-      sx = 0.75 + q * 2.0;
-      sy = 1.32 - q * 1.20;
-    } else if (prog < .86) {
-      const q = eOut((prog - .78) / .08);
-      sx = 2.75 - q * 1.25;
-      sy = 0.12 + q * .38;
-    } else {
-      const q = (prog - .86) / .14;
-      sx = 1.5 + q * 1.5;
-      sy = 0.50 - q * .49;
-    }
-
-    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 8, sx, sy)));
-
-    if (prog >= 0.86 && !floodStarted) {
-      floodStarted = true;
-      animateTideIn(bgColor, 950, () => {
-        panel.classList.add('active');
-        panel.style.color = '#ffffff';
+    const progress=Math.min((now-start)/duration,1);
+    const travel=progress*progress*(3-2*progress);
+    const moving=new DOMMatrix(matrix.toString());
+    moving.m42=matrix.m42-travel*totalTravel;
+    blob.style.transform=moving.toString();
+    blob.style.opacity=String(1-Math.max(0,(progress-.8)/.2));
+    // Use the idle clock throughout, so the outline does not reset on click.
+    const points=idleBlobPoints(id,now/1000);
+    const cx=BD[id].cx,cy=BD[id].cy;
+    // Acceleration pulls the leading tip upward; the lower body follows later.
+    // Both envelopes start at zero, preserving the exact outline on click.
+    const pull=Math.pow(Math.sin(progress*Math.PI),1.2);
+    const tail=Math.pow(Math.sin(progress*Math.PI),1.6);
+    const radius=BD[id].r;
+    pathEl.setAttribute('d',smoothPath(points.map(([x,y])=>{
+      const dy=y-cy;
+      const height=Math.max(-1,Math.min(1,dy/radius));
+      const leading=Math.max(0,-height);
+      const trailing=Math.max(0,height);
+      const width=1-.18*pull-.16*pull*leading+.06*tail*trailing;
+      return [cx+(x-cx)*width,
+        cy+dy*(1+.36*pull)-radius*.23*pull*leading*leading
+          +radius*.16*tail*trailing*trailing];
+    })));
+    if(progress>=.62&&!floodStarted) {
+      floodStarted=true;
+      animateTideIn(bgColor,700,()=>{
+        if(id==='blob-photography') {
+          photoPanel.classList.add('from-home');
+          openPhotoViewer(JSON.parse(blob.dataset.works).map(w=>w.photo),0);
+        } else {panel.classList.add('active');panel.style.color='#ffffff';}
       });
     }
-
-    if (prog < 1) requestAnimationFrame(frame);
-    else blob.style.visibility = 'hidden';
+    if(progress<1)requestAnimationFrame(frame);
+    else blob.style.visibility='hidden';
   }
-
   requestAnimationFrame(frame);
 }
 
@@ -545,7 +533,7 @@ function returnBlob(blob) {
   function frame(now) {
     const prog = Math.min((now - start) / RDUR, 1);
     const tSec = (now - start) / 1000;
-    blob.style.transform = `translateY(${floatDy - (1 - eOut3(prog)) * totalTravel}px)`;
+    blob.style.transform = `translateY(${(floatDy - totalTravel) * (1 - eOut3(prog))}px)`;
     if (prog < .16) blob.style.opacity = String(prog / .16);
     else blob.style.opacity = '1';
 
@@ -558,16 +546,15 @@ function returnBlob(blob) {
       const q = eOut3((prog - .14) / .68);
       sx = 0.7 + q * .30;
       sy = 1.28 - q * .28;
-    } else if (prog < .93) {
-      const q = Math.sin(((prog - .82) / .11) * Math.PI);
-      sx = 1 + q * .13;
-      sy = 1 - q * .10;
     } else {
       sx = 1;
       sy = 1;
     }
-
-    pathEl.setAttribute('d', smoothPath(blobPts(bd.cx, bd.cy, bd.r, NOISE[id], tSec + 20, sx, sy)));
+    const moving = blobPts(bd.cx,bd.cy,bd.r,NOISE[id],tSec+20,sx,sy);
+    const idle = idleBlobPoints(id,now/1000);
+    const blend = Math.max(0,Math.min(1,(prog-.55)/.45));
+    const smooth = blend*blend*(3-2*blend);
+    pathEl.setAttribute('d',smoothPath(moving.map((point,i)=>point.map((v,j)=>v+(idle[i][j]-v)*smooth))));
 
     if (prog < 1) {
       requestAnimationFrame(frame);
@@ -585,7 +572,7 @@ function returnBlob(blob) {
 
 document.querySelectorAll('.blob').forEach(blob => {
   blob.addEventListener('click', () => {
-    if (blob.classList.contains('flying-js')) return;
+    if (activeBlob || document.querySelector('.blob.flying-js')) return;
     activeBlob = blob;
     panelTitle.textContent = blob.dataset.category;
     panelCount.textContent = String(JSON.parse(blob.dataset.works).length).padStart(2, '0') + ' Works';
@@ -646,6 +633,7 @@ const demoImage = document.getElementById('demo-image');
 
 // Gallery state
 let galleryImages = [];
+let galleryCaptions = [];
 let galleryIndex  = 0;
 let galleryTimer  = null;
 
@@ -655,6 +643,8 @@ function showGalleryFrame(idx) {
   demoImage.style.opacity = '0';
   demoImage.onload = () => { demoImage.style.opacity = '1'; };
   demoImage.src = src;
+  demoImage.alt = galleryCaptions[galleryIndex] || 'Project image ' + (galleryIndex + 1);
+  if (galleryCaptions.length) document.querySelector('.proj-controls-hint').textContent = (galleryIndex + 1) + ' / ' + galleryImages.length + ' · ' + galleryCaptions[galleryIndex];
   if (!demoImage.classList.contains('active')) demoImage.classList.add('active');
   gamePH.classList.add('hidden');
   // Update dots
@@ -674,17 +664,20 @@ function stopGalleryAuto() {
 function openProject(card) {
   const projectId = card.dataset.project || '';
   const play      = card.dataset.play    || '';
-  const github    = card.dataset.github  || '#';
+  const github    = card.dataset.github || PROJECT_DATA[projectId]?.github || '#';
   const title     = card.dataset.title   || '';
   const desc      = card.dataset.desc    || '';
   const year      = card.dataset.year    || '';
   const data      = PROJECT_DATA[projectId] || {};
   projPanel.classList.toggle('immersive-project', projectId === 'cornerset');
-  projPanel.classList.toggle('map-project', projectId === 'archipelago');
+  projPanel.classList.toggle('map-project', ['archipelago', 'accessibleweather'].includes(projectId));
   projPanel.classList.remove('details-open');
   const toggle = document.getElementById('project-details-toggle');
   toggle.setAttribute('aria-expanded', 'false');
   toggle.textContent = 'About this project';
+  const journal = document.getElementById('project-journal');
+  journal.hidden = !data.journal;
+  if (data.journal) journal.href = data.journal;
   const resource = document.getElementById('project-resource');
   resource.hidden = !data.resource;
   if (data.resource) { resource.href = data.resource; resource.textContent = data.resourceLabel; }
@@ -713,6 +706,7 @@ function openProject(card) {
 
   // GitHub link: hide entirely when project has no public repo
   const ghLink = document.getElementById('proj-gh-link');
+  ghLink.textContent = data.githubLabel || 'View on GitHub ↗';
   if (data.noGithub || !github || github === '#') {
     ghLink.style.display = 'none';
   } else {
@@ -750,6 +744,7 @@ function openProject(card) {
   if (data.gallery && data.gallery.length > 0) {
     // ── Image gallery mode ──────────────────────────────────────
     galleryImages = data.gallery;
+    galleryCaptions = data.captions || [];
     galleryIndex  = 0;
 
     // Build dot indicators
@@ -839,53 +834,94 @@ const photoThumbRow= document.getElementById('photo-thumb-row');
 let photoList  = [];
 let photoIndex = 0;
 
+const reducedPhotoMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let photoRequest = 0;
 function showPhoto(idx) {
+  if (!photoList.length) return;
+  const direction = idx < photoIndex ? -1 : 1;
   photoIndex = ((idx % photoList.length) + photoList.length) % photoList.length;
-  photoMainImg.style.opacity = '0';
-  photoMainImg.onload = () => { photoMainImg.style.opacity = '1'; };
-  photoMainImg.src = photoList[photoIndex];
-  photoThumbRow.querySelectorAll('.ph-thumb').forEach((t, i) => {
-    t.classList.toggle('active', i === photoIndex);
-  });
+  const request = ++photoRequest;
+  const src = photoList[photoIndex];
+  const preload = new Image();
+  preload.onload = () => {
+    if (request !== photoRequest) return;
+    photoMainImg.src = src;
+    photoMainImg.alt = 'Photography collection ' + (photoIndex + 1);
+    photoMainImg.style.opacity = '1';
+    photoMainImg.getAnimations().forEach(a => a.cancel());
+    photoMainImg.animate([{opacity:0, transform:`translateX(${direction * 28}px) scale(.98)`, filter:'blur(3px)'}, {opacity:1, transform:'none', filter:'blur(0px)'}], {duration:reducedPhotoMotion.matches ? 0 : 650, easing:'cubic-bezier(.2,.7,.2,1)'});
+    if (lightbox.open) updateLightbox();
+  };
+  preload.onerror = () => { if (request === photoRequest) { photoMainImg.alt = 'Collection unavailable'; photoMainImg.src = src; } };
+  preload.src = src;
+  document.getElementById('photo-counter').textContent = String(photoIndex + 1).padStart(2,'0') + ' / ' + String(photoList.length).padStart(2,'0');
+  photoThumbRow.querySelectorAll('.ph-thumb').forEach((t,i) => {t.classList.toggle('active',i===photoIndex);t.setAttribute('aria-pressed',String(i===photoIndex));});
 }
-
 function openPhotoViewer(photos, startIdx) {
   photoList = photos;
-
-  // Build thumbnails
-  photoThumbRow.innerHTML = photos.map((src, i) =>
-    `<div class="ph-thumb${i === startIdx ? ' active' : ''}" data-i="${i}">
-       <img src="${src}" alt="" />
-     </div>`
-  ).join('');
-  photoThumbRow.querySelectorAll('.ph-thumb').forEach(t => {
-    t.addEventListener('click', () => showPhoto(parseInt(t.dataset.i)));
-  });
-
-  photoMainImg.src = '';
-  photoMainImg.style.opacity = '0';
+  photoThumbRow.innerHTML = photos.map((src,i) => `<button type="button" class="ph-thumb" data-i="${i}" aria-label="View collection ${i+1}"><img src="${src}" alt="" /></button>`).join('');
+  photoThumbRow.querySelectorAll('.ph-thumb').forEach(t => t.addEventListener('click',()=>showPhoto(Number(t.dataset.i))));
   photoPanel.classList.add('active');
-  setTimeout(() => showPhoto(startIdx), 80);
+  showPhoto(startIdx);
 }
-
 photoBack.addEventListener('click', () => {
-  photoPanel.classList.remove('active');
-  setTimeout(() => {
-    photoMainImg.src = '';
-    photoThumbRow.innerHTML = '';
-    photoList = [];
-  }, 700);
+  photoPanel.classList.remove('active'); ++photoRequest;
+  if(photoPanel.classList.contains('from-home')) closeBtn.click();
 });
-
-photoPrev.addEventListener('click', () => showPhoto(photoIndex - 1));
-photoNext.addEventListener('click', () => showPhoto(photoIndex + 1));
-
-// Keyboard nav when photo panel is open
-document.addEventListener('keydown', e => {
-  if (!photoPanel.classList.contains('active')) return;
-  if (e.key === 'ArrowLeft')  showPhoto(photoIndex - 1);
-  if (e.key === 'ArrowRight') showPhoto(photoIndex + 1);
-  if (e.key === 'Escape')     photoBack.click();
+photoPrev.addEventListener('click',()=>showPhoto(photoIndex-1));
+photoNext.addEventListener('click',()=>showPhoto(photoIndex+1));
+const lightbox = document.getElementById('photo-lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxStage = document.getElementById('lightbox-stage');
+let photoZoom=1, photoX=0, photoY=0, photoDrag=null, lightboxClosing=false;
+function positionLightbox() {
+  const maxX=Math.max(0,(lightboxImg.clientWidth*photoZoom-lightboxStage.clientWidth)/2);
+  const maxY=Math.max(0,(lightboxImg.clientHeight*photoZoom-lightboxStage.clientHeight)/2);
+  photoX=Math.max(-maxX,Math.min(maxX,photoX)); photoY=Math.max(-maxY,Math.min(maxY,photoY));
+  lightboxImg.style.transform=`translate(${photoX}px, ${photoY}px) scale(${photoZoom})`;
+  document.getElementById('lightbox-zoom').textContent=photoZoom>1?'Fit to screen':'Zoom +';
+  lightboxStage.style.cursor=photoZoom>1?'grab':'zoom-in';
+}
+function updateLightbox() {
+  lightboxImg.src=photoMainImg.src; lightboxImg.alt=photoMainImg.alt;
+  document.getElementById('lightbox-count').textContent=document.getElementById('photo-counter').textContent;
+  photoZoom=1;photoX=photoY=0;positionLightbox();
+}
+function imageFlight(from,to,reverse=false) {
+  if (reducedPhotoMotion.matches || !from.width || !to.width) return null;
+  const frame={transform:`translate(${from.left-to.left}px,${from.top-to.top}px) scale(${from.width/to.width},${from.height/to.height})`};
+  return lightboxImg.animate(reverse?[{transform:'none'},frame]:[frame,{transform:'none'}],{duration:550,easing:'cubic-bezier(.22,.8,.22,1)',fill:'both'});
+}
+function openLightbox() {
+  if (!photoMainImg.naturalWidth || lightbox.open) return;
+  const from=photoMainImg.getBoundingClientRect();lightbox.showModal(); updateLightbox();
+  requestAnimationFrame(()=>{const anim=imageFlight(from,lightboxImg.getBoundingClientRect());if(anim)anim.onfinish=()=>anim.cancel();});
+}
+function closeLightbox() {
+  if(lightboxClosing)return;lightboxClosing=true;photoZoom=1;photoX=photoY=0;positionLightbox();
+  lightboxImg.getAnimations().forEach(a=>a.cancel());
+  const anim=imageFlight(photoMainImg.getBoundingClientRect(),lightboxImg.getBoundingClientRect(),true);
+  const finish=()=>{lightbox.close();if(anim)anim.cancel();lightboxClosing=false;photoMainImg.focus();};
+  if(anim)anim.onfinish=finish;else finish();
+}
+photoMainImg.addEventListener('click',openLightbox);
+photoMainImg.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLightbox();}});
+document.getElementById('lightbox-close').addEventListener('click',closeLightbox);
+lightbox.addEventListener('cancel',e=>{e.preventDefault();closeLightbox();});
+document.getElementById('lightbox-prev').addEventListener('click',()=>showPhoto(photoIndex-1));
+document.getElementById('lightbox-next').addEventListener('click',()=>showPhoto(photoIndex+1));
+document.getElementById('lightbox-zoom').addEventListener('click',()=>{photoZoom=photoZoom>1?1:2.5;photoX=photoY=0;positionLightbox();});
+lightboxStage.addEventListener('wheel',e=>{e.preventDefault();photoZoom=Math.max(1,Math.min(4,photoZoom-e.deltaY*.003));positionLightbox();},{passive:false});
+lightboxStage.addEventListener('pointerdown',e=>{if(photoZoom<=1)return;photoDrag={x:e.clientX-photoX,y:e.clientY-photoY};lightboxStage.setPointerCapture(e.pointerId);});
+lightboxStage.addEventListener('pointermove',e=>{if(!photoDrag)return;photoX=e.clientX-photoDrag.x;photoY=e.clientY-photoDrag.y;positionLightbox();});
+lightboxStage.addEventListener('pointerup',()=>photoDrag=null);
+lightboxStage.addEventListener('pointercancel',()=>photoDrag=null);
+window.addEventListener('resize',()=>{if(lightbox.open)positionLightbox();});
+document.addEventListener('keydown',e=>{
+  if(!photoPanel.classList.contains('active') || lightboxClosing)return;
+  if(e.key==='ArrowLeft'){e.preventDefault();showPhoto(photoIndex-1);}
+  if(e.key==='ArrowRight'){e.preventDefault();showPhoto(photoIndex+1);}
+  if(e.key==='Escape'&&!lightbox.open)photoBack.click();
 });
 
 photoBack.addEventListener('mouseenter', () => { ring.style.width='50px'; ring.style.height='50px'; });
@@ -893,6 +929,7 @@ photoBack.addEventListener('mouseleave', () => { ring.style.width='34px'; ring.s
 
 closeBtn.addEventListener('click', () => {
   const blob = activeBlob;
+  if (!blob) return;
   activeBlob = null;
   const { bgColor } = lastFlight;
 
@@ -1092,3 +1129,46 @@ document.getElementById('project-details-toggle').addEventListener('click', func
   this.setAttribute('aria-expanded', String(open));
   this.textContent = open ? 'Close details' : 'About this project';
 });
+
+// CV card: turn toward the reader, hold, then fold into a download control.
+const cvStage=document.querySelector('.crawl-stage');
+const cvStory=document.getElementById('cv-story');
+const cvCard=document.getElementById('cv-card');
+const cvHeading=document.querySelector('.cv-heading');
+const cvPreview=cvCard.querySelector('img');
+const cvLabel=cvCard.querySelector('.cv-button-label');
+const cvSheen=cvCard.querySelector('.cv-sheen');
+const cvScrollNote=document.querySelector('.cv-scroll-note');
+const cvDownloadNote=document.querySelector('.cv-download-note');
+let cvFrame=null;
+const cvClamp=v=>Math.max(0,Math.min(1,v));
+const cvEase=v=>{v=cvClamp(v);return v*v*(3-2*v);};
+function renderCV() {
+  cvFrame=null;
+  if(!aboutPanel.classList.contains('active')||!aboutPanel.classList.contains('reading-mode'))return;
+  const height=cvStage.clientHeight;
+  const top=cvStory.getBoundingClientRect().top-cvStage.getBoundingClientRect().top;
+  const progress=cvClamp(-top/Math.max(1,cvStory.offsetHeight-height));
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const turn=cvEase(progress/.42);
+  const fold=reduced?1:cvEase((progress-.68)/.26);
+  const width=Math.min(520,cvStage.clientWidth*.72,height*.62*612/792);
+  const cardHeight=width*792/612;
+  cvCard.style.width=(width+(220-width)*fold)+'px';
+  cvCard.style.height=(cardHeight+(58-cardHeight)*fold)+'px';
+  cvCard.style.borderRadius=(8+24*fold)+'px';
+  cvCard.style.transform=reduced?'none':`translateY(${35*(1-turn)-30*fold}px) rotateX(${18*(1-turn)}deg) rotateY(${-38*(1-turn)}deg) rotateZ(${-8*(1-turn)}deg) scale(${.82+.18*turn})`;
+  cvCard.style.boxShadow=`0 ${30-20*fold}px ${85-55*fold}px #0009,${3*(1-fold)}px ${4*(1-fold)}px 0 #b8b09c`;
+  cvPreview.style.opacity=String(1-cvEase(fold/.65));
+  cvLabel.style.opacity=String(cvEase((fold-.55)/.45));
+  cvSheen.style.opacity=String(.35*(1-fold)*(1-turn));
+  cvHeading.style.opacity=String(reduced?1:1-cvEase((progress-.25)/.3));
+  cvScrollNote.style.opacity=String(reduced?0:1-cvEase(progress/.2));
+  cvDownloadNote.style.opacity=String(fold);
+}
+function scheduleCV(){if(cvFrame===null)cvFrame=requestAnimationFrame(renderCV);}
+cvStage.addEventListener('scroll',scheduleCV,{passive:true});
+window.addEventListener('resize',scheduleCV);
+navAbout.addEventListener('click',scheduleCV);
+aboutMode.addEventListener('click',scheduleCV);
+window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',scheduleCV);

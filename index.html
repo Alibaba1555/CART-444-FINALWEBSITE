@@ -74,7 +74,7 @@
         "
         data-category="Interaction &amp; Design"
         data-color="#549688"
-        data-works='[{"title": "Corner Set", "year": "2026", "project": "cornerset", "play": "https://alibaba1555.github.io/CART-498-Prototype-Project-Corner-Set/", "desc": "A UX and interface design prototype connecting street performers with nearby audiences. The project explores the user experience from both perspectives: setting up a performance and discovering nearby music. Interactive flows include local discovery, audio previews, and simulated tipping. Completion is expected in mid-December 2026.", "status": "In Progress", "expected": "Mid-December 2026"}, {"title": "Hochelaga Archipelago", "year": "2026", "project": "archipelago", "desc": "A collaborative interactive map being developed for a museum / ecology centre setting. The intended final experience introduces visitors to the ecological environments of Montr\u00e9al and its surrounding islands through exploration of the Hochelaga Archipelago. My contribution focuses on animated water and island-name interactions. The project is in progress, with completion expected in mid-December 2026.", "status": "In Progress", "expected": "Mid-December 2026"}, {"title": "La Chanson de Roland", "year": "2022", "project": "roland", "desc": "An illustrated adaptation of La Chanson de Roland, combining AI-generated imagery inspired by classical oil painting with editorial layout."}, {"title": "Don Quixote \u2014 Negative Space Cover", "year": "2023", "project": "quixote", "desc": "A book cover for Don Quixote using negative space, contrasting silhouettes, and a restrained red-and-gold palette."}, {"title": "Roberto Rossellini Poster", "year": "2023", "project": "poster", "desc": "A tribute poster for filmmaker Roberto Rossellini, combining a collage of film stills with a prominent portrait, expressive typography, and a red-and-gold frame."}, {"title": "Shadow Puppet Animation", "year": "2023", "project": "puppet", "desc": "An animated shadow puppet piece made in Adobe Animate, drawing from Chinese \u76ae\u5f71\u620f tradition. Characters are illustrated in ink-wash style against a painted mountain landscape, with hand-keyed movement that tries to preserve the imprecision and life of physical puppetry."}, {"title": "Short Film Production", "year": "2023", "project": "film", "desc": "Behind-the-scenes from a short film made with classmates \u2014 handling camera operation, framing, and on-set decisions. Working with real equipment in real locations reinforced how much of filmmaking happens in the pauses between shots."}, {"title": "Environment Design \u2014 Unreal Engine 4", "year": "2024", "project": "environment", "desc": "An industrial environment created in Unreal Engine 4, exploring the atmosphere of enclosed corridors through lighting, materials, and spatial composition."}]'>
+        data-works='[{"title": "Corner Set", "year": "2026", "project": "cornerset", "play": "https://alibaba1555.github.io/CART-498-Prototype-Project-Corner-Set/", "desc": "A UX and interface design prototype connecting street performers with nearby audiences. The project explores the user experience from both perspectives: setting up a performance and discovering nearby music. Interactive flows include local discovery, audio previews, and simulated tipping. Completion is expected in mid-December 2026.", "status": "In Progress", "expected": "Mid-December 2026"}, {"title": "Hochelaga Archipelago", "year": "2026", "project": "archipelago", "desc": "A collaborative interactive map being developed for a museum or ecology centre setting. The intended final experience introduces visitors to the ecological environments of Montr\u00e9al and its surrounding islands through exploration of the Hochelaga Archipelago. My contribution focuses on animated water and island-name interactions. The project is in progress, with completion expected in mid-December 2026.", "status": "In Progress", "expected": "Mid-December 2026"}, {"title": "Accessible Weather", "year": "2026", "project": "accessibleweather", "desc": "A collaborative accessibility project developing weather and environmental information for a user with a visual impairment. The prototype combines large, high-contrast readings with plans for tactile controls and spoken feedback. It explores how interaction design can respond to specific access needs and support more independent everyday use.", "status": "In Progress", "expected": "Mid-December 2026"}, {"title": "La Chanson de Roland", "year": "2022", "project": "roland", "desc": "An illustrated adaptation of La Chanson de Roland, combining AI-generated imagery inspired by classical oil painting with editorial layout."}, {"title": "Don Quixote \u2014 Negative Space Cover", "year": "2023", "project": "quixote", "desc": "A book cover for Don Quixote using negative space, contrasting silhouettes, and a restrained red-and-gold palette."}, {"title": "Roberto Rossellini Poster", "year": "2023", "project": "poster", "desc": "A tribute poster for filmmaker Roberto Rossellini, combining a collage of film stills with a prominent portrait, expressive typography, and a red-and-gold frame."}, {"title": "Shadow Puppet Animation", "year": "2023", "project": "puppet", "desc": "An animated shadow puppet piece made in Adobe Animate, drawing from Chinese \u76ae\u5f71\u620f tradition. Characters are illustrated in ink-wash style against a painted mountain landscape, with hand-keyed movement that tries to preserve the imprecision and life of physical puppetry."}, {"title": "Short Film Production", "year": "2023", "project": "film", "desc": "Behind-the-scenes from a short film made with classmates \u2014 handling camera operation, framing, and on-set decisions. Working with real equipment in real locations reinforced how much of filmmaking happens in the pauses between shots."}, {"title": "Environment Design \u2014 Unreal Engine 4", "year": "2024", "project": "environment", "desc": "An industrial environment created in Unreal Engine 4, exploring the atmosphere of enclosed corridors through lighting, materials, and spatial composition."}]'>
         <div class="blob-shape">
           <svg width="310" height="322" viewBox="0 0 214 222" fill="none" style="overflow:visible">
             <path d="M107,22C155,22 195,62 195,110C195,158 155,198 107,198C59,198 19,158 19,110C19,62 59,22 107,22Z" fill="#549688" opacity=".84"/>
@@ -161,7 +161,7 @@
   <div class="proj-panel" id="proj-panel">
     <button class="proj-back" id="proj-back">← Works</button>
 
-    <div class="project-actions"><button id="project-details-toggle" type="button" aria-expanded="false">About this project</button><a id="project-resource" target="_blank" rel="noopener">Open project ↗</a></div>
+    <div class="project-actions"><button id="project-details-toggle" type="button" aria-expanded="false">About this project</button><a id="project-journal" target="_blank" rel="noopener" hidden>Process Journal ↗</a><a id="project-resource" target="_blank" rel="noopener">Open project ↗</a></div>
     <div class="proj-layout">
 
       <div class="proj-play-col">
@@ -230,25 +230,33 @@
 
   <!-- ── Photo viewer panel ── -->
   <div class="photo-panel" id="photo-panel">
-    <button class="photo-back" id="photo-back">← Photography</button>
+    <button class="photo-back" id="photo-back">← Back</button>
 
     <div class="photo-viewer">
       <div class="photo-main-wrap">
-        <img id="photo-main-img" src="" alt="" />
+        <img id="photo-main-img" src="" alt="" role="button" tabindex="0" aria-label="Open full-screen collection" /><span class="photo-expand-hint">Click to explore ↗</span>
         <button class="photo-nav photo-prev" id="photo-prev">&#8592;</button>
         <button class="photo-nav photo-next" id="photo-next">&#8594;</button>
       </div>
 
       <div class="photo-meta-col">
         <div class="photo-statement-label">Photography</div>
-        <p class="photo-statement-text">I picked up photography as a hobby in early 2026. I enjoy taking my camera on walks and capturing everyday places, light, and moments that catch my attention.</p>
+        <p class="photo-statement-text">I started photography as a hobby in early 2026, partly inspired by the film <em>The Secret Life of Walter Mitty</em>. I enjoy bringing my camera on walks and trips, photographing places, people, and everyday things that catch my attention.</p>
+        <p class="photo-statement-text">Photography has helped me notice small details I used to walk past, like light on a building or something happening on a quiet street. It has also made me more comfortable starting conversations with people I do not know. Sometimes taking a photo gives me a chance to ask a question, hear a story, or see a place from someone else's perspective.</p>
+        <p class="photo-statement-text">I am still learning, and I enjoy having a reason to go outside, meet people, and find something interesting or beautiful in everyday life. These three collections show some of my photographs, with more on Instagram.</p>
 
-        <div class="photo-thumb-row" id="photo-thumb-row"></div>
+        <a class="photo-instagram" href="https://www.instagram.com/vbtrave/" target="_blank" rel="noopener"><span>More through my lens ↗</span><small>@vbtrave</small></a><div class="photo-counter" id="photo-counter" aria-live="polite"></div><div class="photo-thumb-row" id="photo-thumb-row"></div>
       </div>
     </div>
   </div>
 
 
+  <dialog id="photo-lightbox" aria-label="Full-screen photography collection">
+    <div class="lightbox-toolbar"><span id="lightbox-count"></span><div><button id="lightbox-zoom" type="button">Zoom +</button><button id="lightbox-close" type="button" autofocus>Close ×</button></div></div>
+    <div id="lightbox-stage"><img id="lightbox-img" alt="" draggable="false"></div>
+    <button class="lightbox-prev" id="lightbox-prev" aria-label="Previous collection">←</button><button class="lightbox-next" id="lightbox-next" aria-label="Next collection">→</button>
+    <p class="lightbox-hint">Scroll or use Zoom to magnify · Drag to explore · Esc to close</p>
+  </dialog>
   <!-- ── About / Crawl panel ── -->
   <div class="about-panel reading-mode" id="about-panel">
     <button class="about-back" id="about-back">← Back</button>
@@ -269,11 +277,25 @@
           <p class="crawl-p">In 2026, I completed an AI and Innovation internship at BMW Technology Office China in Shanghai. I explored AI-assisted workflows, supported technology research, and created visual and multimedia content. I also co-organized and facilitated an internal AI workshop with activities in prompt design, image generation, and interactive prototyping. Working across these tasks gave me experience communicating technical ideas and collaborating with people from different backgrounds.</p>
           <div class="crawl-section-label">Selected Tools</div>
           <p class="crawl-p">JavaScript, HTML/CSS, p5.js, Phaser, Max/MSP, Unreal Engine, Adobe Creative Suite, Generative AI, Prompt Design, and AI-assisted Prototyping.</p>
-          <p class="crawl-p"><a href="TianshunWuCV.pdf" download>Download CV ↗</a></p>
+          <p class="crawl-p cv-quick-download"><a href="TianshunWuCV.pdf" download>Download CV ↗</a></p>
           <div class="crawl-end-mark">&#8213;</div>
 
         </div>
       </div>
+      <section class="cv-story" id="cv-story" aria-label="Curriculum vitae preview">
+        <div class="cv-sticky">
+          <div class="cv-heading"><span>BACKGROUND &amp; EXPERIENCE</span><h2>A closer look.</h2><p>Education, projects, and experience.</p></div>
+          <div class="cv-perspective">
+            <a class="cv-card" id="cv-card" href="TianshunWuCV.pdf" download aria-label="Download Tianshun Wu's CV as a PDF">
+              <img src="images/cv-preview.png" alt="Preview of the first page of Tianshun Wu’s CV" width="1082" height="1400" decoding="async">
+              <span class="cv-sheen" aria-hidden="true"></span>
+              <span class="cv-button-label">Download CV <span aria-hidden="true">↓</span></span>
+            </a>
+          </div>
+          <p class="cv-scroll-note">Scroll to explore <span aria-hidden="true">↓</span></p>
+          <p class="cv-download-note">PDF · 2 pages</p>
+        </div>
+      </section>
     </div>
   </div>
 
