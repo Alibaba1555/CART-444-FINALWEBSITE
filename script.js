@@ -18,6 +18,26 @@ document.addEventListener('mousemove', e => {
 })();
 
 const PROJECT_DATA = {
+  archipelago: {
+    tag: 'Interaction Design · 2026 · Work in Progress',
+    noGithub: true,
+    gallery: ['images/island-prototype.png', 'images/island-team.png'],
+    process: `I explored water animation and a wet-paper visual texture, then tested how an island name could emerge from the water after selection. Seagull Island is a temporary test name. Slight differences in letter position and rotation suggest floating, while the surrounding currents leave space for the text.<br><br>The first image shows my standalone water and naming experiment. The second shows the shared team interface, which provides the context for the next integration step.`,
+    reflection: `The animation needs to support orientation without distracting from documentary content. The next step is to adapt the experiment to the shared map structure, then test readability, island switching, performance, and a reduced-motion alternative.`,
+    modes: [],
+    resource: 'https://alibaba1555.github.io/CART-470-Project-Journal/',
+    resourceLabel: 'Read process journal ↗'
+  },
+  cornerset: {
+    tag: 'UX & Interface Design · 2026 · Work in Progress',
+    noGithub: true,
+    process: `The prototype explores two connected journeys: a performer setting up a street performance and an audience member discovering nearby music. Iterations focus on map filtering, performer profiles, short audio previews, and the flow from discovery to support.`,
+    reflection: `This is an interface prototype. Payments and Face ID are simulated, and the project is still being refined. Current work focuses on clearer proximity feedback and a Moment Ticket that records an encounter.`,
+    modes: [],
+    resource: 'https://alibaba1555.github.io/CART-498-Prototype-Project-Corner-Set/',
+    resourceLabel: 'Open in new tab ↗'
+  },
+
   pacman: {
     tag: 'Game · 2024',
     systemsLabel: 'Game Modes',
@@ -35,7 +55,7 @@ const PROJECT_DATA = {
     ]
   },
   parkour: {
-    tag: 'Game · 2024',
+    tag: 'Game · Early 2025',
     systemsLabel: 'Game Systems',
     process: `This project started from a simple side-scrolling runner, but I wanted it to feel less passive. Instead of only avoiding obstacles, I introduced combat as a core mechanic.<br><br>The player controls a knight who keeps moving forward, while dealing with enemies through normal attacks and skill-based attacks. I designed two types of enemies — melee and ranged — to create different kinds of pressure.<br><br>Throughout development, I kept adjusting the balance between movement, combat timing, and survival. The goal was to create a rhythm where the player is constantly making small decisions: attack, dodge, or recover.`,
     reflection: `What I found interesting is how quickly a simple runner becomes stressful once combat is introduced. Movement is no longer just about speed, but about timing and positioning.<br><br>The game still feels quite minimal, but that also makes every mistake more visible. Sometimes the difficulty comes more from rough transitions than intentional design.<br><br>If I continue developing this project, I would refine enemy behaviors and add clearer feedback for attacks and damage. Right now, the system works, but it could feel much more responsive and alive.`,
@@ -53,27 +73,30 @@ const PROJECT_DATA = {
     systemsLabel: 'About the Work',
     noGithub: true,
     gallery: ['images/La1.png','images/La2.png'],
-    process: `I was among the first students in the program to submit a design project made with generative AI — at a time when most people were still unfamiliar with the tools. Rather than using a generic model, I locally deployed Stable Diffusion and trained my own fine-tuned weights to achieve a specific visual register: the texture and weight of classical oil painting, applied to the epic narrative of La Chanson de Roland.<br><br>Each spread was treated as a composition problem — how to give visual form to a medieval poem without illustration becoming literal. The AI was a tool for translation, not automation.`,
-    reflection: `The project earned strong results, but more importantly it changed how I understood design research. Fine-tuning a model is a design act: every training decision is a curatorial one, shaping what the system considers plausible or beautiful.<br><br>Looking back, I would push further into the relationship between text and image — using the poem's rhythm and line breaks as compositional logic, not just its narrative content.`,
+    process: `In late 2022, I began exploring generative AI while it was still unfamiliar to many people around me. I deployed Stable Diffusion locally and experimented with it for this coursework project.<br><br>I selected images for their narrative relevance and visual consistency, then arranged them into spreads with the text. The main design challenge was connecting individual generated images into a coherent sequence.`,
+    reflection: `This project reflects my willingness to learn unfamiliar tools early and find practical uses for them. Generating images was only one part of the process: selecting, arranging, and revising them was what turned the experiments into a coherent project.<br><br>If I developed it further, I would explore how the poem's rhythm and line breaks could shape the page layouts.`,
     modes: [
-      { n: '01', title: 'Custom model training', sub: 'Oil painting style weights' },
-      { n: '02', title: 'Narrative composition', sub: 'Spread-by-spread layout' },
-      { n: '03', title: 'Local SD deployment', sub: 'Fully offline pipeline' },
-      { n: '04', title: 'Style research', sub: 'Medieval manuscript + neorealism' }
+      { n: '01', title: 'Local deployment', sub: 'Stable Diffusion' },
+      { n: '02', title: 'Visual experimentation', sub: 'Classical oil painting aesthetic' },
+      { n: '03', title: 'Image selection', sub: 'Narrative and visual consistency' },
+      { n: '04', title: 'Editorial composition', sub: 'Text and illustrated spreads' }
     ]
   },
-  poster: {
-    tag: 'Design · 2023',
-    systemsLabel: 'About the Work',
+  quixote: {
+    tag: 'Design · 2023 · Book Cover',
     noGithub: true,
-    gallery: ['images/D1.png','images/D2.png'],
-    process: `The Roberto Rossellini poster started from an interest in how film posters from the 1950s–70s used typography as a structural element rather than decoration. The challenge was to make something that felt of its era — heavy serif type, collaged photography — without becoming pastiche.<br><br>`,
-    reflection: `Graphic design, for me, is mostly about restraint — deciding what not to include. Both posters taught me that strong work often comes from committing fully to a single compositional idea and removing everything that dilutes it.`,
-    modes: [
-      { n: '01', title: 'Rossellini tribute', sub: 'Typographic poster' },
-      { n: '02', title: 'Chinese character poster', sub: 'Silhouette + flat colour' },
-      { n: '03', title: 'Book cover design', sub: 'Editorial layout' }
-    ]
+    gallery: ['images/D1.png'],
+    process: `The composition uses the relationship between filled shapes and empty space to bring different figures into the same image. A smaller rider is set against a much larger silhouette, while the limited palette keeps attention on their outlines.`,
+    reflection: `The cover explores how much a silhouette can communicate with very little detail. The contrast in scale creates a tension between the figure and the world imagined around it.`,
+    modes: []
+  },
+  poster: {
+    tag: 'Design · 2023 · Film Poster',
+    noGithub: true,
+    gallery: ['images/D2.png'],
+    process: `I arranged the film stills into a repeated grid and layered a larger cutout portrait over them. The director's name anchors the top of the composition, while the ladder and smaller figure extend the collage toward the foreground.`,
+    reflection: `The main challenge in this composition is hierarchy: the portrait and title need to remain clear within a dense collection of images. The repeated grid provides structure, while the overlapping figures break its regularity.`,
+    modes: []
   },
   puppet: {
     tag: 'Design · 2023 · Adobe Animate',
@@ -102,20 +125,15 @@ const PROJECT_DATA = {
     ]
   },
   environment: {
-    tag: 'Design · 2024 · Environment & 3D',
-    systemsLabel: 'About the Work',
+    tag: 'Design · 2024 · Unreal Engine 4',
     noGithub: true,
     gallery: ['images/E1.png'],
-    process: `These pieces explore spatial storytelling through environment design — dark corridor architecture, game space atmosphere. The corridors were built to communicate a specific feeling before any narrative context: something industrial, confined, and slightly worn.<br><br>`,
-    reflection: `Environment design taught me that space communicates before story does. A player or viewer will have already formed an emotional register from the space before they encounter a single narrative element. Getting that register right — through scale, lighting, and surface quality — is most of the work.`,
-    modes: [
-      { n: '01', title: 'Corridor architecture', sub: 'Atmospheric game space' },
-      { n: '02', title: 'Voxel modelling', sub: 'Ship with dynamic lighting' },
-      { n: '03', title: 'Spatial composition', sub: 'Scale & shadow' }
-    ]
+    process: `I worked on the scene in Unreal Engine 4, focusing on how the arrangement of walls, overhead structures, and lighting shapes the corridor. Repeated structural elements establish depth, while material surfaces and changes in brightness give the space its industrial character.`,
+    reflection: `This study explores how an environment can suggest an atmosphere before a player encounters a character or story. Lighting and spatial rhythm are central to how the corridor feels and where the eye travels.`,
+    modes: []
   },
   recipe: {
-    tag: 'Other · 2024 · OpenAI API',
+    tag: 'Creative Computing · 2024 · OpenAI API',
     systemsLabel: 'Features',
     noGithub: false,
     gallery: ['images/O1.png'],
@@ -130,12 +148,12 @@ const PROJECT_DATA = {
     ]
   },
   pollution: {
-    tag: 'Other · 2025 · Max/MSP',
+    tag: 'Creative Computing · 2025 · Max/MSP',
     systemsLabel: 'Sound Sources',
     noGithub: true,
     gallery: ['images/O2.png'],
     process: `O2 is a real-time city sound system built in Max/MSP. Air quality data is pulled live from any city via API — pollutants like NO₂, PM2.5, CO, and ozone are each mapped to distinct sound textures and layered together.<br><br>A heavily polluted city generates industrial noise, low-frequency hum, and synthetic interference. A clean city produces wind, birdsong, and open natural tones. All values are summed into a single continuous audio output — a sonic portrait of a city's atmosphere at that exact moment.`,
-    reflection: `What interested me most was the question of legibility: can someone hear pollution without being told what they are listening to? Early tests suggested yes — listeners consistently described the heavily polluted presets as dense, uncomfortable, or mechanical, without prior context.<br><br>The project also raised questions about data as material. Rather than visualising air quality, sonifying it forces a different kind of attention — duration, texture, and change over time become the medium.`,
+    reflection: `What interested me most was the question of legibility: can someone hear pollution without being told what they are listening to? I used dense, mechanical textures to suggest pollution, but whether listeners interpret them as intended remains a question for future testing.<br><br>The project also raised questions about data as material. Rather than visualising air quality, sonifying it forces a different kind of attention — duration, texture, and change over time become the medium.`,
     modes: [
       { n: '01', title: 'NO₂', sub: 'Industrial / factory noise' },
       { n: '02', title: 'PM2.5', sub: 'Dense granular texture' },
@@ -146,7 +164,7 @@ const PROJECT_DATA = {
     ]
   },
   jukebox: {
-    tag: 'Other · 2025 · Max/MSP · OpenAI API',
+    tag: 'Creative Computing · 2025 · Max/MSP · OpenAI API',
     systemsLabel: 'Signal Chain',
     noGithub: true,
     gallery: ['images/O3.png'],
@@ -185,6 +203,26 @@ const PROJECT_DATA = {
       { n: '06', title: 'Boss Fight', sub: 'Combat climax' }
     ]
   }
+};
+
+
+// Only confirmed project contexts are displayed; unknown fields remain omitted.
+const PROJECT_FACTS = {
+  archipelago: {completion: 'Mid-December 2026', type: 'Group project', context: 'Coursework · CART 470', role: 'Water animation, visual material experiments, and island-name interaction prototype', tools: 'HTML · CSS · JavaScript'},
+  cornerset: {completion: 'Mid-December 2026', context: 'Coursework · CART 498', role: 'UX design, user flows, interface design, and interactive prototyping', tools: 'HTML · CSS · JavaScript'},
+
+  pacman: {context: 'Coursework · CART 253', role: 'Game mechanics, variation design, and programming', tools: 'JavaScript · p5.js'},
+  parkour: {context: 'Coursework · CART 263 · Early 2025', role: 'Gameplay design and programming', tools: 'JavaScript · Phaser'},
+  roland: {context: 'Coursework · 2022', role: 'Local AI setup, image experimentation, selection, and page composition', tools: 'Stable Diffusion'},
+  film: {type: 'Group project', context: 'Coursework', role: 'Camera operation and on-set framing'},
+  pollution: {role: 'Sound mapping and patch development', tools: 'Max/MSP · Air quality API'},
+  recipe: {role: 'Interface and recipe-generation workflow', tools: 'OpenAI API'},
+  jukebox: {role: 'Patch development and sound synthesis', tools: 'Max/MSP · Node.js · OpenAI API'},
+  puppet: {role: 'Illustration and animation', tools: 'Adobe Animate'},
+  quixote: {role: 'Negative-space composition and book cover design'},
+  poster: {role: 'Image collage, typography, and poster composition'},
+  environment: {role: 'Environment design and spatial composition', tools: 'Unreal Engine 4'},
+  soulslike: {role: 'Combat systems and encounter design', tools: 'Unreal Engine 4'}
 };
 
 const BD = {
@@ -575,8 +613,9 @@ document.querySelectorAll('.blob').forEach(blob => {
                   <div class="work-card-ghost">${n}</div>
                   <div class="work-card-body">
                     <div class="work-card-title">${w.title}</div>
+                    ${w.status ? `<div class="work-status"><span class="work-status-badge"><span aria-hidden="true">✦</span> IN PROGRESS</span><span class="work-status-date">Expected completion · ${w.expected}</span></div>` : ''}
                     <div class="work-card-year">${w.year}</div>
-                    <div class="work-card-cta">View project + play ↗</div>
+                    <div class="work-card-cta">${w.play && w.play !== '#' ? 'Try prototype ↗' : 'View project ↗'}</div>
                   </div>
                 </div>`;
       }
@@ -640,6 +679,30 @@ function openProject(card) {
   const desc      = card.dataset.desc    || '';
   const year      = card.dataset.year    || '';
   const data      = PROJECT_DATA[projectId] || {};
+  projPanel.classList.toggle('immersive-project', projectId === 'cornerset');
+  projPanel.classList.toggle('map-project', projectId === 'archipelago');
+  projPanel.classList.remove('details-open');
+  const toggle = document.getElementById('project-details-toggle');
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.textContent = 'About this project';
+  const resource = document.getElementById('project-resource');
+  resource.hidden = !data.resource;
+  if (data.resource) { resource.href = data.resource; resource.textContent = data.resourceLabel; }
+
+  const facts = PROJECT_FACTS[projectId] || {};
+  const labels = {type: 'Project type', context: 'Context', role: 'My contribution', tools: 'Tools', completion: 'Expected completion'};
+  const factsEl = document.getElementById('project-facts');
+  factsEl.replaceChildren();
+  Object.entries(facts).forEach(([key, value]) => {
+    const dt = document.createElement('dt'); dt.textContent = labels[key];
+    const dd = document.createElement('dd'); dd.textContent = value;
+    factsEl.append(dt, dd);
+  });
+  document.querySelector('.proj-controls-hint').textContent =
+    projectId === 'cornerset' ? 'Interactive prototype · payments are simulated' :
+    data.gallery ? 'Use the arrows to browse project images' :
+    play && play !== '#' ? 'See the game instructions for controls' : '';
+
 
   document.getElementById('proj-title').textContent    = title;
   document.getElementById('proj-desc').innerHTML       = desc;
@@ -854,6 +917,28 @@ const aboutPanel = document.getElementById('about-panel');
 const aboutBack = document.getElementById('about-back');
 const crawlScrollEl = document.getElementById('crawl-scroll');
 const navAbout = document.getElementById('nav-about');
+const aboutMode = document.getElementById('about-mode');
+aboutMode.addEventListener('click', () => {
+  const reading = aboutPanel.classList.toggle('reading-mode');
+  crawlOpen = !reading;
+  aboutMode.textContent = reading ? 'Cinematic view' : 'Reading view';
+  aboutMode.setAttribute('aria-pressed', String(!reading));
+  document.querySelector('.crawl-stage').scrollTop = 0;
+  resetCrawl();
+});
+aboutPanel.addEventListener('keydown', e => {
+  if (e.key === 'Escape') aboutBack.click();
+});
+let touchY = null;
+aboutPanel.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, {passive: true});
+aboutPanel.addEventListener('touchmove', e => {
+  if (!crawlOpen || touchY === null) return;
+  const nextY = e.touches[0].clientY;
+  crawlTarget = clampCrawl(crawlTarget + nextY - touchY);
+  touchY = nextY;
+  e.preventDefault();
+}, {passive: false});
+
 
 let crawlOpen = false;
 let crawlPos = 0;
@@ -863,9 +948,9 @@ function getCrawlMetrics() {
   const contentH = crawlScrollEl.scrollHeight;
   const viewportH = window.innerHeight;
 
-  const topLimit = viewportH * 2.8;
-  const startY = topLimit;
-  const endY = -(contentH - viewportH * 0.82);
+  const topLimit = 0;
+  const startY = 0;
+  const endY = -(contentH + viewportH);
 
   return { topLimit, startY, endY };
 }
@@ -885,7 +970,7 @@ function resetCrawl() {
 navAbout.addEventListener('click', e => {
   e.preventDefault();
   aboutPanel.classList.add('active');
-  crawlOpen = true;
+  crawlOpen = !aboutPanel.classList.contains('reading-mode');
 
   requestAnimationFrame(() => {
     resetCrawl();
@@ -947,10 +1032,13 @@ window.addEventListener('resize', () => {
   crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
 });
 
-(function crawlRaf() {
+let crawlLastFrame = null;
+(function crawlRaf(timestamp) {
   requestAnimationFrame(crawlRaf);
-  if (!crawlOpen) return;
-
+  if (!crawlOpen || document.hidden) { crawlLastFrame = null; return; }
+  const elapsed = crawlLastFrame === null ? 0 : Math.min((timestamp - crawlLastFrame) / 1000, 0.05);
+  crawlLastFrame = timestamp;
+  crawlTarget = clampCrawl(crawlTarget - 26 * elapsed);
   crawlPos += (crawlTarget - crawlPos) * 0.1;
   crawlScrollEl.style.transform = `translateY(${crawlPos}px)`;
 })();
@@ -998,4 +1086,9 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && contactOpen) {
     contactBack.click();
   }
+});
+document.getElementById('project-details-toggle').addEventListener('click', function () {
+  const open = projPanel.classList.toggle('details-open');
+  this.setAttribute('aria-expanded', String(open));
+  this.textContent = open ? 'Close details' : 'About this project';
 });
