@@ -1140,6 +1140,9 @@ const cvLabel=cvCard.querySelector('.cv-button-label');
 const cvSheen=cvCard.querySelector('.cv-sheen');
 const cvScrollNote=document.querySelector('.cv-scroll-note');
 const cvDownloadNote=document.querySelector('.cv-download-note');
+const cvSticky=cvStory.querySelector('.cv-sticky');
+// Each visible face stays within 90 degrees of the viewer.
+cvCard.style.backfaceVisibility='hidden';
 let cvFrame=null;
 const cvClamp=v=>Math.max(0,Math.min(1,v));
 const cvEase=v=>{v=cvClamp(v);return v*v*(3-2*v);};
@@ -1152,7 +1155,7 @@ function renderCV() {
   const pageHeight=fullWidth*792/612;
   const viewHeight=Math.min(pageHeight,h-150);
   const readDistance=Math.max(0,pageHeight*2+24-viewHeight);
-  const intro=h*1.65, ending=h*1.2;
+  const intro=h*1.65, ending=h*1.6;
   const total=intro+readDistance+ending;
   cvStory.style.height=reduced?'auto':(total+h)+'px';
   const top=cvStory.getBoundingClientRect().top-cvStage.getBoundingClientRect().top;
@@ -1160,28 +1163,36 @@ function renderCV() {
   const turn=cvEase(distance/(h*.95));
   const grow=cvEase((distance-h*.7)/(h*.95));
   const endingProgress=reduced?0:cvClamp((distance-intro-readDistance)/ending);
-  const retreat=cvEase(endingProgress/.48);
-  const fold=cvEase((endingProgress-.45)/.55);
-  const finalTurn=retreat*(1-fold);
+  // One continuous gesture: tilt, soften the page, then settle into the button.
+  // Staying short of edge-on prevents the card collapsing into a tiny sliver.
+  const motion=cvEase(endingProgress);
+  const angle=62*Math.sin(Math.PI*motion);
+  const shrink=cvEase((endingProgress-.18)/.72);
+  const fold=cvEase((endingProgress-.35)/.55);
+  const arrive=cvEase((endingProgress-.68)/.28);
+  const glow=reduced ? 0 : cvEase((endingProgress-.32)/.68);
   const smallWidth=Math.min(460,cvStage.clientWidth*.65,h*.52*612/792);
   const width=smallWidth+(fullWidth-smallWidth)*grow;
   const cardHeight=smallWidth*792/612+(viewHeight-smallWidth*792/612)*grow;
-  cvCard.style.width=reduced?'100%':(width+(220-width)*fold)+'px';
-  cvCard.style.height=reduced?'auto':(cardHeight+(58-cardHeight)*fold)+'px';
+  cvCard.style.width=reduced?'100%':(width+(220-width)*shrink)+'px';
+  cvCard.style.height=reduced?'auto':(cardHeight+(58-cardHeight)*shrink)+'px';
   cvCard.style.borderRadius=(10*(1-grow)+28*fold)+'px';
-  cvCard.style.transform=reduced?'none':`translateY(${35*(1-grow)}px) rotateX(${28*(1-turn)+12*finalTurn}deg) rotateY(${-65*(1-turn)+32*finalTurn}deg) rotateZ(${-14*(1-turn)+6*finalTurn}deg) scale(${1-.16*finalTurn})`;
-  cvCard.style.boxShadow=`0 25px 80px #0009,${4*(1-grow)}px ${5*(1-grow)}px 0 #b8b09c`;
+  cvCard.style.transform=reduced?'none':`translateY(${35*(1-grow)}px) rotateX(${28*(1-turn)}deg) rotateY(${-65*(1-turn)}deg) rotateZ(${-14*(1-turn)}deg) rotate3d(0.258819,0.965926,0,${angle}deg)`;
+  // Keep the same shadow layers throughout so there is no on/off boundary.
+  cvCard.style.boxShadow=`0 ${25-9*glow}px ${80-24*glow}px rgba(0,0,0,${.56-.12*glow}), 0 0 28px rgba(255,239,202,${.16*glow}), 0 0 85px rgba(242,213,155,${.13*glow}), 0 0 170px rgba(225,190,122,${.07*glow})`;
+  // Broad ambient illumination, with a soft centre instead of a bright outline.
+  if(cvSticky) cvSticky.style.background=`radial-gradient(ellipse 460px 310px at 50% calc(50% + 35px), rgba(233,210,164,${.085*glow}) 0%, rgba(211,183,131,${.045*glow}) 35%, rgba(185,155,102,${.012*glow}) 65%, transparent 100%)`;
   const readOffset=Math.min(readDistance,Math.max(0,distance-intro));
-  cvPreview.style.transform=reduced?'none':`translateY(${-readOffset}px)`;
-  cvPreview.style.opacity=String(1-cvEase(fold/.6));
-  cvLabel.style.opacity=String(cvEase((fold-.55)/.45));
+  cvPreview.style.transform=reduced?'none':`translateY(${-readOffset*(width+(220-width)*shrink)/fullWidth}px)`;
+  cvPreview.style.opacity=String(1-cvEase((endingProgress-.28)/.28));
+  cvLabel.style.opacity=String(arrive);
   cvSheen.style.opacity=String(.3*(1-turn));
   cvHeading.style.opacity=String(reduced?0:1-cvEase(distance/(h*.7)));
   cvScrollNote.style.opacity=String(reduced?0:1-cvEase(distance/(h*.7)));
-  cvDownloadNote.style.opacity=String(fold);
-  cvCard.dataset.downloadReady=String(fold>.98);
-  cvCard.tabIndex=fold>.98?0:-1;
-  cvCard.style.cursor=fold>.98?'pointer':'default';
+  cvDownloadNote.style.opacity=String(arrive);
+  cvCard.dataset.downloadReady=String(arrive>.98);
+  cvCard.tabIndex=arrive>.98?0:-1;
+  cvCard.style.cursor=arrive>.98?'pointer':'default';
 }
 // Reading the pages must not accidentally start a download.
 cvCard.addEventListener('click',e=>{if(cvCard.dataset.downloadReady!=='true')e.preventDefault();});
