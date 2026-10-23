@@ -2,11 +2,45 @@ const cursor = document.getElementById('cursor');
 const ring   = document.getElementById('cursor-ring');
 let mx = 0, my = 0, rx = 0, ry = 0;
 
+// The parent cursor must not remain painted over an embedded project.
+let portfolioCursorVisible = false;
+function hidePortfolioCursor() {
+  portfolioCursorVisible = false;
+  cursor.style.visibility = 'hidden';
+  ring.style.visibility = 'hidden';
+}
+hidePortfolioCursor();
 document.addEventListener('mousemove', e => {
+  if (e.target instanceof HTMLIFrameElement) {
+    hidePortfolioCursor();
+    return;
+  }
   mx = e.clientX;
   my = e.clientY;
+  if (!portfolioCursorVisible) {
+    rx = mx;
+    ry = my;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+  }
   cursor.style.left = mx + 'px';
   cursor.style.top = my + 'px';
+  cursor.style.visibility = 'visible';
+  ring.style.visibility = 'visible';
+  portfolioCursorVisible = true;
+});
+document.querySelectorAll('iframe').forEach(frame => {
+  frame.addEventListener('pointerenter', hidePortfolioCursor);
+  frame.addEventListener('mouseenter', hidePortfolioCursor);
+  // Also cover a preview that loads directly underneath a stationary pointer.
+  frame.addEventListener('load', () => {
+    if (document.elementFromPoint(mx, my) === frame) hidePortfolioCursor();
+  });
+});
+document.documentElement.addEventListener('mouseleave', hidePortfolioCursor);
+window.addEventListener('blur', hidePortfolioCursor);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) hidePortfolioCursor();
 });
 
 (function rafCursor() {
@@ -389,7 +423,7 @@ function drawAllTide(prog, t, bgColor) {
   EDGES.forEach(({ side, ph }) => drawTideStrip(side, prog, t, ph, bgColor));
 }
 
-function animateTideIn(bgColor, duration, onPanel) {
+function animateTideIn(bgColor, duration, onPanel, revealAt = .46) {
   clearFlood();
   const startT = performance.now();
   let panelFired = false;
@@ -401,7 +435,7 @@ function animateTideIn(bgColor, duration, onPanel) {
     const prog = eIO(raw);
     drawAllTide(prog, elapsed / 1000, bgColor);
 
-    if (!panelFired && raw >= 0.46) {
+    if (!panelFired && raw >= revealAt) {
       panelFired = true;
       if (onPanel) onPanel();
     }
@@ -472,7 +506,7 @@ function flyBlob(blob) {
   blob.style.animation='none';
   blob.style.opacity='1';
   panelStrip.style.background='rgba(255,255,255,.38)';
-  const duration=1050;
+  const duration=id==='blob-photography'?1250:1050;
   const start=performance.now();
   let floodStarted=false;
   function frame(now) {
@@ -502,12 +536,12 @@ function flyBlob(blob) {
     })));
     if(progress>=.62&&!floodStarted) {
       floodStarted=true;
-      animateTideIn(bgColor,700,()=>{
+      animateTideIn(bgColor,id==='blob-photography'?950:700,()=>{
         if(id==='blob-photography') {
           photoPanel.classList.add('from-home');
           openPhotoViewer(JSON.parse(blob.dataset.works).map(w=>w.photo),0);
         } else {panel.classList.add('active');panel.style.color='#ffffff';}
-      });
+      }, id==='blob-photography'?.72:.46);
     }
     if(progress<1)requestAnimationFrame(frame);
     else blob.style.visibility='hidden';
@@ -671,6 +705,7 @@ function openProject(card) {
   const data      = PROJECT_DATA[projectId] || {};
   projPanel.classList.toggle('immersive-project', projectId === 'cornerset');
   projPanel.classList.toggle('map-project', ['archipelago', 'accessibleweather'].includes(projectId));
+  projPanel.classList.toggle('weather-project', projectId === 'accessibleweather');
   projPanel.classList.remove('details-open');
   const toggle = document.getElementById('project-details-toggle');
   toggle.setAttribute('aria-expanded', 'false');

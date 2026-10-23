@@ -1343,3 +1343,30 @@ nav a:hover { opacity: .85; }
 
 .cv-static-download {display:none;text-align:center;padding:35px;color:var(--warm);}
 @media(prefers-reduced-motion:reduce) {.reading-mode .cv-static-download {display:block;}}
+
+/* Keep weather documentation comfortably inside the viewport. */
+.weather-project .proj-play-col {min-height:0;justify-content:center;}
+.weather-project .proj-play-wrap {
+  flex:none;width:100%;max-width:900px;
+  height:min(66dvh,680px);margin:0 auto;
+  background:transparent;border-color:transparent;
+}
+.weather-project .demo-image {
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+}
+.weather-project .proj-controls-hint {max-width:900px;margin:0 auto;line-height:1.6;}
+/* Give the green lift, dark reveal and content entrance room to breathe. */
+.photo-panel.from-home {transition:opacity .65s ease,visibility .65s;}
+.photo-panel.active .photo-main-wrap {
+  animation-duration:1.15s;animation-delay:.25s;
+}
+.photo-panel.active .photo-meta-col {
+  animation-duration:1.15s;animation-delay:.42s;
+}
+@media(max-width:800px) {
+  .weather-project .proj-play-wrap {height:min(55dvh,520px);}
+}
+@media(prefers-reduced-motion:reduce) {
+  .photo-panel.from-home {transition:none!important;}
+  .photo-panel.active .photo-main-wrap,.photo-panel.active .photo-meta-col {animation:none;}
+}
