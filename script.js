@@ -55,9 +55,10 @@ const PROJECT_DATA = {
   accessibleweather: {
     tag: 'Accessible Interaction Design · 2026 · Work in Progress',
     noGithub: true,
-    gallery: ['images/weather-interface.png', 'images/weather-controller.png', 'images/weather-sensor.png', 'images/weather-concept.png'],
-    captions: ['Interface prototype — large type, high contrast, and weather readings; the local gas sensor is not connected to this interface yet.', 'Hardware concept — proposed tactile controls for speech, volume, navigation, and confirmation.', 'BME680 test — local sensor readings captured in the terminal; integration is in progress.', 'AI-assisted concept illustration — an imagined interaction with the device, not a photograph of a completed prototype.'],
-    process: `Our team is developing the project around the needs of a user with a visual impairment. The interface uses large type, strong contrast, and a simple hierarchy to make weather readings easier to find. The hardware concept explores a large speak button, volume controls, and tactile navigation with spoken feedback.<br><br>The images document separate parts of the work: a weather interface prototype, an annotated controller concept, and a BME680 sensor test. The final image is an AI-assisted illustration of the intended interaction. These components are still being brought together.`,
+    manualGallery: true,
+    gallery: ['images/IMG_4485.mov', 'images/weather-hardware.png', 'images/weather-interface.png', 'images/weather-controller.png', 'images/weather-sensor.png', 'images/weather-concept.png'],
+    captions: ['Hardware prototype — video demonstration. Use the player controls to play or pause.', 'Hardware prototype in progress — Raspberry Pi, speakers, wiring and tactile buttons.', 'Interface prototype — large type, high contrast, and weather readings; the local gas sensor is not connected to this interface yet.', 'Hardware concept — proposed tactile controls for speech, volume, navigation, and confirmation.', 'BME680 test — local sensor readings captured in the terminal; integration is in progress.', 'AI-assisted concept illustration — an imagined interaction with the device, not a photograph of a completed prototype.'],
+    process: `Our team is developing the project around the needs of a user with a visual impairment. The interface uses large type, strong contrast, and a simple hierarchy to make weather readings easier to find. The hardware concept explores a large speak button, volume controls, and tactile navigation with spoken feedback.<br><br>The video and hardware photograph document the prototype in progress. The remaining images show separate parts of the work: a weather interface prototype, an annotated controller concept, and a BME680 sensor test. The final image is an AI-assisted illustration of the intended interaction. These components are still being brought together.`,
     reflection: `Designing for a specific access need means reconsidering what can be read, felt, and heard. A visually simple interface is only one part of the experience; controls and feedback also need to be clear and predictable. The next steps are hardware and software integration, followed by evaluation with the intended user and further refinement.`,
     modes: []
   },
@@ -670,16 +671,54 @@ let galleryImages = [];
 let galleryCaptions = [];
 let galleryIndex  = 0;
 let galleryTimer  = null;
+let galleryManual = false;
+let galleryPending = null;
+const mediaWrap = document.querySelector('.proj-play-wrap');
+const demoVideo = document.createElement('video');
+demoVideo.className = 'demo-video';
+demoVideo.controls = true;
+demoVideo.playsInline = true;
+demoVideo.preload = 'metadata';
+demoVideo.setAttribute('aria-label', 'Accessible Weather hardware demonstration');
+mediaWrap.appendChild(demoVideo);
+function clearProjectVideo() {
+  demoVideo.pause();
+  demoVideo.hidden = true;
+  demoVideo.removeAttribute('src');
+  demoVideo.load();
+}
+clearProjectVideo();
+function fitRotatedHardware() {
+  const rotated = demoImage.classList.contains('hardware-rotated');
+  demoImage.style.width = rotated ? Math.max(1, mediaWrap.clientHeight - 64) + 'px' : '';
+  demoImage.style.height = rotated ? Math.max(1, mediaWrap.clientWidth - 100) + 'px' : '';
+}
+new ResizeObserver(fitRotatedHardware).observe(mediaWrap);
 
 function showGalleryFrame(idx) {
+  if (!galleryImages.length) return;
   galleryIndex = ((idx % galleryImages.length) + galleryImages.length) % galleryImages.length;
   const src = galleryImages[galleryIndex];
-  demoImage.style.opacity = '0';
-  demoImage.onload = () => { demoImage.style.opacity = '1'; };
-  demoImage.src = src;
-  demoImage.alt = galleryCaptions[galleryIndex] || 'Project image ' + (galleryIndex + 1);
+  const isVideo = /\.(mov|mp4|webm)$/i.test(src);
+  clearProjectVideo();
+  demoImage.classList.toggle('active', !isVideo);
+  demoImage.classList.toggle('hardware-rotated', src === 'images/weather-hardware.png');
+  fitRotatedHardware();
+  const external = document.getElementById('game-external');
+  external.parentElement.style.display = isVideo ? '' : 'none';
+  if (isVideo) {
+    demoImage.removeAttribute('src');
+    demoVideo.hidden = false;
+    demoVideo.src = src;
+    external.href = src;
+    external.textContent = 'Video not playing? Open the original file ↗';
+  } else {
+    demoImage.style.opacity = '0';
+    demoImage.onload = () => { demoImage.style.opacity = '1'; };
+    demoImage.src = src;
+    demoImage.alt = galleryCaptions[galleryIndex] || 'Project image ' + (galleryIndex + 1);
+  }
   if (galleryCaptions.length) document.querySelector('.proj-controls-hint').textContent = (galleryIndex + 1) + ' / ' + galleryImages.length + ' · ' + galleryCaptions[galleryIndex];
-  if (!demoImage.classList.contains('active')) demoImage.classList.add('active');
   gamePH.classList.add('hidden');
   // Update dots
   document.querySelectorAll('.gallery-dot').forEach((d,i) => {
@@ -689,6 +728,7 @@ function showGalleryFrame(idx) {
 
 function startGalleryAuto() {
   stopGalleryAuto();
+  if (galleryManual || !projPanel.classList.contains('active')) return;
   galleryTimer = setInterval(() => showGalleryFrame(galleryIndex + 1), 3200);
 }
 function stopGalleryAuto() {
@@ -763,6 +803,9 @@ function openProject(card) {
   }
 
   // Reset media area
+  clearTimeout(galleryPending);
+  clearProjectVideo();
+  galleryManual = !!data.manualGallery;
   stopGalleryAuto();
   gameFrame.src = '';
   demoImage.classList.remove('active');
@@ -805,7 +848,7 @@ function openProject(card) {
     // Hide external link row — no playable version
     ghExternal.parentElement.style.display = 'none';
 
-    setTimeout(() => { showGalleryFrame(0); startGalleryAuto(); }, 500);
+    galleryPending = setTimeout(() => { showGalleryFrame(0); startGalleryAuto(); }, 500);
 
   } else if (play && play !== '#') {
     // ── Iframe / playable mode ──────────────────────────────────
@@ -829,6 +872,8 @@ function openProject(card) {
 }
 
 function closeProject() {
+  clearTimeout(galleryPending);
+  clearProjectVideo();
   projPanel.classList.remove('active');
   stopGalleryAuto();
   setTimeout(() => {
