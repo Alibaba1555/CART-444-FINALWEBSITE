@@ -1219,6 +1219,9 @@ const cvPreview=cvCard.querySelector('.cv-pages');
 const cvLabel=cvCard.querySelector('.cv-button-label');
 const cvSheen=cvCard.querySelector('.cv-sheen');
 const cvScrollNote=document.querySelector('.cv-scroll-note');
+// Anchor the cue to the viewport-sized panel, not the entering sticky section.
+aboutPanel.appendChild(cvScrollNote);
+cvScrollNote.style.opacity='0';
 const cvDownloadNote=document.querySelector('.cv-download-note');
 const cvSticky=cvStory.querySelector('.cv-sticky');
 // Each visible face stays within 90 degrees of the viewer.
@@ -1268,7 +1271,20 @@ function renderCV() {
   cvLabel.style.opacity=String(arrive);
   cvSheen.style.opacity=String(.3*(1-turn));
   cvHeading.style.opacity=String(reduced?0:1-cvEase(distance/(h*.7)));
-  cvScrollNote.style.opacity=String(reduced?0:1-cvEase(distance/(h*.7)));
+  // Position the cue beside the rendered card, including its entry and 3D turn.
+  const cardRect = cvCard.getBoundingClientRect();
+  const panelRect = aboutPanel.getBoundingClientRect();
+  const cueAside = cvScrollNote.querySelector('.cv-scroll-aside');
+  const cueWidth = cueAside.offsetWidth;
+  const cueHeight = cueAside.offsetHeight;
+  const cueX = Math.min(cardRect.right-panelRect.left+28, panelRect.width-cueWidth-16);
+  const cueY = cardRect.top-panelRect.top+cardRect.height*.48;
+  cueAside.style.left = Math.max(16,cueX)+'px';
+  cueAside.style.top = cueY+'px';
+  const cueEntry = cvEase((h*.88-(cueY+cueHeight*.5))/(h*.16));
+  const cueOpacity = reduced ? 0 : cueEntry*(1-cvEase(distance/(h*.45)));
+  cvScrollNote.style.opacity=String(cueOpacity);
+  cvScrollNote.classList.toggle('is-lit', !reduced && cueOpacity > .01);
   cvDownloadNote.style.opacity=String(arrive);
   cvCard.dataset.downloadReady=String(arrive>.98);
   cvCard.tabIndex=arrive>.98?0:-1;

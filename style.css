@@ -1377,3 +1377,44 @@ nav a:hover { opacity: .85; }
 .weather-project .demo-image.hardware-rotated {inset:auto;left:50%;top:50%;max-width:none;max-height:none;transform:translate(-50%,-50%) rotate(90deg);object-fit:contain;}
 .weather-project .gallery-dots {bottom:auto;top:14px;}
 .weather-project .gallery-nav button {cursor:pointer;}
+
+
+
+
+
+
+
+/* Write the lettering once, then hold the complete illuminated strokes. */
+.about-panel>.cv-scroll-note {position:absolute;inset:0;margin:0;z-index:25;pointer-events:none;color:#f7e6bc;text-align:left;}
+.cv-scroll-aside {position:absolute;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-start;gap:7px;width:144px;}
+.cv-scroll-writing {display:block;width:144px;height:27px;order:-1;overflow:visible;}
+.cv-scroll-arrow {display:block;width:30px;height:78px;margin-left:8px;overflow:visible;}
+.cv-trace-base,.cv-trace-light {stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1;}
+.cv-trace-base {opacity:0;}
+.cv-scroll-writing .cv-trace-light {stroke-width:1.5;}
+.cv-trace-light {
+  stroke:#f7e6bc;stroke-dasharray:1;stroke-dashoffset:1;opacity:0;
+  filter:drop-shadow(0 0 2px #ebd29670);
+}
+.cv-scroll-note.is-lit .cv-writing-light {animation:cv-write-and-hold 6s linear forwards;}
+.cv-scroll-note.is-lit .cv-arrow-light {animation:cv-arrow-and-hold 1.7s cubic-bezier(.25,.1,.25,1) forwards;}
+@keyframes cv-write-and-hold {
+  0% {stroke-dashoffset:1;opacity:1;}
+  100% {stroke-dashoffset:0;opacity:1;}
+}
+@keyframes cv-arrow-and-hold {
+  0% {stroke-dashoffset:1;opacity:0;}
+  12% {opacity:1;}
+  100% {stroke-dashoffset:0;opacity:1;}
+}
+.about-panel:not(.reading-mode)>.cv-scroll-note {display:none;}
+.cv-button-label {gap:0;padding:0;text-align:center;justify-content:center;align-items:center;}
+@media(max-width:600px) {
+  .cv-scroll-aside {width:92px;}
+  .cv-scroll-writing {width:92px;height:24px;}
+  .cv-scroll-arrow {height:62px;width:24px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .about-panel>.cv-scroll-note {display:none;}
+  .cv-trace-light {animation:none!important;}
+}
