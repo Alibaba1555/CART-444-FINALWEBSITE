@@ -357,6 +357,7 @@ const floodCtx = floodCanvas.getContext('2d');
 let floodRaf = null;
 
 function resizeFlood() {
+  if (floodCanvas.width === window.innerWidth && floodCanvas.height === window.innerHeight) return;
   floodCanvas.width = window.innerWidth;
   floodCanvas.height = window.innerHeight;
 }
@@ -368,6 +369,7 @@ function clearFlood() {
     cancelAnimationFrame(floodRaf);
     floodRaf = null;
   }
+  floodCanvas.style.backgroundColor = '';
   floodCtx.clearRect(0, 0, floodCanvas.width, floodCanvas.height);
 }
 
@@ -445,8 +447,9 @@ function animateTideIn(bgColor, duration, onPanel, revealAt = .46) {
       floodRaf = requestAnimationFrame(frame);
     } else {
       floodRaf = null;
-      floodCtx.fillStyle = bgColor;
-      floodCtx.fillRect(0, 0, floodCanvas.width, floodCanvas.height);
+      // The bitmap is cleared on resize. Keep the settled color in CSS.
+      floodCanvas.style.backgroundColor = bgColor;
+      floodCtx.clearRect(0, 0, floodCanvas.width, floodCanvas.height);
     }
   }
 
@@ -465,6 +468,7 @@ function animateTideOut(bgColor, duration, onDone) {
     const elapsed = now - startT;
     const raw = Math.min(elapsed / duration, 1);
     const prog = 1 - eOut3(raw);
+    floodCanvas.style.backgroundColor = '';
     drawAllTide(prog, elapsed / 1000, bgColor);
 
     if (raw < 1) {
@@ -484,6 +488,12 @@ const panelCount = document.getElementById('panel-count');
 const panelStrip = document.getElementById('panel-strip');
 const worksGrid = document.getElementById('works-grid');
 const closeBtn = document.getElementById('close-btn');
+const homeHeader = document.querySelector('header');
+const homeScene = document.querySelector('.scene');
+function setHomeAvailable(available) {
+  homeHeader.inert = !available;
+  homeScene.inert = !available;
+}
 let activeBlob = null;
 let lastFlight = {};
 
@@ -511,6 +521,7 @@ function flyBlob(blob) {
   const start=performance.now();
   let floodStarted=false;
   function frame(now) {
+    if (activeBlob !== blob) return;
     const progress=Math.min((now-start)/duration,1);
     const travel=progress*progress*(3-2*progress);
     const moving=new DOMMatrix(matrix.toString());
@@ -599,6 +610,7 @@ function returnBlob(blob) {
       blob.style.zIndex = '';
       blob.style.animation = FLOAT_ANIM[id];
       blob.classList.remove('flying-js');
+      setHomeAvailable(true);
     }
   }
 
@@ -609,6 +621,8 @@ document.querySelectorAll('.blob').forEach(blob => {
   blob.addEventListener('click', () => {
     if (activeBlob || document.querySelector('.blob.flying-js')) return;
     activeBlob = blob;
+    setHomeAvailable(false);
+    panel.querySelector(".panel-content").scrollTop = 0;
     panelTitle.textContent = blob.dataset.category;
     panelCount.textContent = String(JSON.parse(blob.dataset.works).length).padStart(2, '0') + ' Works';
 
@@ -735,7 +749,17 @@ function stopGalleryAuto() {
   if (galleryTimer) { clearInterval(galleryTimer); galleryTimer = null; }
 }
 
+let frameFallback, projectCleanup;
+function cancelProjectCallbacks() {
+  clearTimeout(galleryPending);
+  clearTimeout(frameFallback);
+  clearTimeout(projectCleanup);
+  gameFrame.onload = null;
+}
 function openProject(card) {
+  cancelProjectCallbacks();
+  projPanel.querySelector('.proj-layout').scrollTop = 0;
+  projPanel.querySelector('.proj-info-col').scrollTop = 0;
   const projectId = card.dataset.project || '';
   const play      = card.dataset.play    || '';
   const github    = card.dataset.github || PROJECT_DATA[projectId]?.github || '#';
@@ -855,11 +879,11 @@ function openProject(card) {
     ghExternal.parentElement.style.display = '';
     ghExternal.href = play;
     ghExternal.textContent = 'Open in new tab ↗';
-    setTimeout(() => {
+    galleryPending = setTimeout(() => {
       gameFrame.src = play;
       const hide = () => gamePH.classList.add('hidden');
       gameFrame.onload = hide;
-      setTimeout(hide, 5000);
+      frameFallback = setTimeout(hide, 5000);
     }, 600);
   } else {
     ghExternal.parentElement.style.display = '';
@@ -872,11 +896,11 @@ function openProject(card) {
 }
 
 function closeProject() {
-  clearTimeout(galleryPending);
+  cancelProjectCallbacks();
   clearProjectVideo();
   projPanel.classList.remove('active');
   stopGalleryAuto();
-  setTimeout(() => {
+  projectCleanup = setTimeout(() => {
     gameFrame.src = '';
     demoImage.classList.remove('active');
     demoImage.removeAttribute('src');
@@ -1086,6 +1110,7 @@ function resetCrawl() {
 
 navAbout.addEventListener('click', e => {
   e.preventDefault();
+  setHomeAvailable(false);
   aboutPanel.classList.add('active');
   crawlOpen = !aboutPanel.classList.contains('reading-mode');
 
@@ -1097,6 +1122,7 @@ navAbout.addEventListener('click', e => {
 aboutBack.addEventListener('click', () => {
   crawlOpen = false;
   aboutPanel.classList.remove('active');
+  setHomeAvailable(true);
 });
 
 aboutBack.addEventListener('mouseenter', () => {
@@ -1173,6 +1199,7 @@ navContact.addEventListener('click', e => {
   if (contactOpen) return;
 
   contactOpen = true;
+  setHomeAvailable(false);
 
   animateTideIn(CONTACT_BG, 950, () => {
     contactPanel.classList.add('active');
@@ -1180,11 +1207,13 @@ navContact.addEventListener('click', e => {
 });
 
 contactBack.addEventListener('click', () => {
+  if (!contactPanel.classList.contains('active')) return;
   contactPanel.classList.remove('active');
 
   setTimeout(() => {
     animateTideOut(CONTACT_BG, 820, () => {
       contactOpen = false;
+      setHomeAvailable(true);
     });
   }, 160);
 });

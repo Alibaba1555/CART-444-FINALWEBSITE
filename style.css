@@ -1418,3 +1418,71 @@ nav a:hover { opacity: .85; }
   .about-panel>.cv-scroll-note {display:none;}
   .cv-trace-light {animation:none!important;}
 }
+
+/* Keep the settled tide against all four edges as the viewport changes. */
+#color-flood { width: 100%; height: 100%; }
+
+@media (max-width: 1100px), (pointer: coarse) and (max-width: 1400px) {
+  :root { --gutter: clamp(18px, 4vw, 48px); }
+  header { padding: 16px var(--gutter); }
+  nav { gap: clamp(12px, 3vw, 32px); }
+  nav a { display: flex; align-items: center; min-height: 44px; }
+  .scene { width: 100%; height: 100dvh; overflow: hidden; }
+  .blob-shape svg { width: min(17vw, 28dvh); height: auto; }
+  .blob { translate: -50% -50%; }
+  #blob-photography { left: 15% !important; top: 44% !important; }
+  #blob-design { left: 38% !important; top: 64% !important; }
+  #blob-other { left: 61% !important; top: 40% !important; }
+  #blob-game { left: 84% !important; top: 59% !important; }
+  .blob-num { font-size: clamp(24px, 4vw, 44px); }
+  .tagline { max-width: 90%; white-space: normal; line-height: 1.6; }
+  .panel-content { padding: 0 var(--gutter) 48px; }
+  .panel-header { padding: 80px 0 30px; gap: 20px; }
+  .panel-title { font-size: clamp(48px, 9vw, 92px); }
+  .close-btn, .contact-back, .photo-back { left: auto; right: var(--gutter); top: 12px; min-height: 44px; }
+  .about-back, .proj-back { left: var(--gutter); top: 12px; min-height: 44px; }
+  .about-mode { top: 12px; right: var(--gutter); min-height: 44px; }
+  .proj-layout { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); padding: 75px var(--gutter) 24px; gap: 24px; }
+  .project-actions { top: 12px; right: var(--gutter); }
+  .project-actions > * { min-height: 44px; align-content: center; }
+  .contact-content { padding: 75px var(--gutter) 28px; overflow-y: auto; }
+}
+@media (max-width: 850px) {
+  .proj-panel { display: flex; flex-direction: column; }
+  .project-actions { position: relative; inset: auto; flex: none; margin: 12px var(--gutter) 0 calc(var(--gutter) + 90px); min-height: 44px; justify-content: flex-end; flex-wrap: wrap; gap: 0 14px; }
+  .proj-panel .proj-layout { position: relative; display: flex; flex: 1; min-height: 0; flex-direction: column; overflow: auto; padding: 16px var(--gutter) 32px; }
+  .proj-play-col { flex: none; }
+  .proj-panel:not(.map-project):not(.immersive-project) .proj-play-wrap { flex: none; height: clamp(180px, 47dvh, 550px); }
+  .proj-panel .proj-info-col { overflow: visible; }
+  .immersive-project .proj-play-col { flex: 1; }
+  .immersive-project.details-open .proj-info-col { top: 8px; bottom: 8px; overflow-y: auto; }
+}
+@media (max-width: 850px) and (orientation: portrait) {
+  .blob-shape svg { width: min(33vw, 20dvh); }
+  #blob-photography { left: 24% !important; top: 29% !important; }
+  #blob-design { left: 74% !important; top: 34% !important; }
+  #blob-other { left: 25% !important; top: 72% !important; }
+  #blob-game { left: 75% !important; top: 76% !important; }
+}
+@media (max-width: 600px) {
+  header .logo { font-size: 13px; }
+  nav a { font-size: 12px; }
+  .watermark { font-size: 15vw; }
+  .tagline { width: 90%; top: calc(50% + 8vw); font-size: 10px; letter-spacing: .22em; }
+  .hint { width: 100%; text-align: center; bottom: max(18px, env(safe-area-inset-bottom)); font-size: 10px; }
+  .panel-header { align-items: flex-start; flex-direction: column; gap: 14px; padding-bottom: 18px; }
+  .panel-meta { display: flex; align-items: baseline; gap: 12px; }
+  .panel-meta-year { font-size: 22px; margin: 0; }
+  .works-grid { margin-top: 20px; gap: 12px; }
+  .work-card.featured { padding: 16px; gap: 12px; min-height: 94px; }
+  .work-card.featured .work-card-ghost { width: 34px; font-size: 32px; }
+  .work-status { gap: 6px; }
+  .contact-email { font-size: 10vw; }
+  .contact-phone { font-size: 9vw; }
+}
+@media (hover: none) and (pointer: coarse) {
+  .blob-inner { width: 100%; }
+  .blob .blob-num { font-size: clamp(22px, 3.5vw, 38px); opacity: .3; }
+  .blob .blob-label { font-size: clamp(9px, 1.65vw, 12px); letter-spacing: .1em; opacity: .8; }
+  .gallery-nav, .photo-nav { opacity: .85; }
+}
