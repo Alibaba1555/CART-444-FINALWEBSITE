@@ -53,6 +53,7 @@ document.addEventListener('visibilitychange', () => {
 
 const PROJECT_DATA = {
   accessibleweather: {
+    summary: "Weather readings with spoken alerts.",
     tag: 'Accessible Interaction Design · 2026 · Work in Progress',
     noGithub: true,
     manualGallery: true,
@@ -63,6 +64,7 @@ const PROJECT_DATA = {
     modes: []
   },
   archipelago: {
+    summary: "A map of Montréal’s islands and waterways.",
     tag: 'Interaction Design · 2026 · Work in Progress',
     noGithub: false,
     github: 'https://github.com/Jimmy-Le/CART470Project',
@@ -75,6 +77,7 @@ const PROJECT_DATA = {
     resourceLabel: 'Read process journal ↗'
   },
   cornerset: {
+    summary: "Find live street performances nearby.",
     journal: 'https://alibaba1555.github.io/CART-498-Project-Journal/#week-05',
     tag: 'UX & Interface Design · 2026 · Work in Progress',
     noGithub: true,
@@ -86,6 +89,7 @@ const PROJECT_DATA = {
   },
 
   pacman: {
+    summary: "Pac-Man with shifting rules.",
     tag: 'Game · 2024',
     systemsLabel: 'Game Modes',
     process: `The project was developed through iterative experiments. I started from the original Pac-Man mechanics, then introduced controlled disruptions — limiting vision, cloning agents, deforming the maze, and altering pacing.<br><br>Each iteration tested a specific question: how much can the system change before it stops being recognizable?`,
@@ -102,6 +106,7 @@ const PROJECT_DATA = {
     ]
   },
   parkour: {
+    summary: "Run, dodge, and chain attacks.",
     tag: 'Game · Early 2025',
     systemsLabel: 'Game Systems',
     process: `This project started from a simple side-scrolling runner, but I wanted it to feel less passive. Instead of only avoiding obstacles, I introduced combat as a core mechanic.<br><br>The player controls a knight who keeps moving forward, while dealing with enemies through normal attacks and skill-based attacks. I designed two types of enemies — melee and ranged — to create different kinds of pressure.<br><br>Throughout development, I kept adjusting the balance between movement, combat timing, and survival. The goal was to create a rhythm where the player is constantly making small decisions: attack, dodge, or recover.`,
@@ -116,6 +121,7 @@ const PROJECT_DATA = {
     ]
   },
   roland: {
+    summary: "A medieval poem in illustrated form.",
     tag: 'Design · 2022 · Stable Diffusion',
     systemsLabel: 'About the Work',
     noGithub: true,
@@ -130,6 +136,7 @@ const PROJECT_DATA = {
     ]
   },
   quixote: {
+    summary: "Two silhouettes share one book cover.",
     tag: 'Design · 2023 · Book Cover',
     noGithub: true,
     gallery: ['images/D1.png'],
@@ -138,6 +145,7 @@ const PROJECT_DATA = {
     modes: []
   },
   poster: {
+    summary: "A portrait made with film stills.",
     tag: 'Design · 2023 · Film Poster',
     noGithub: true,
     gallery: ['images/D2.png'],
@@ -146,6 +154,7 @@ const PROJECT_DATA = {
     modes: []
   },
   puppet: {
+    summary: "Shadow puppets in an ink-wash landscape.",
     tag: 'Design · 2023 · Adobe Animate',
     systemsLabel: 'About the Work',
     noGithub: true,
@@ -159,6 +168,7 @@ const PROJECT_DATA = {
     ]
   },
   film: {
+    summary: "Camera work on a student film.",
     tag: 'Design · 2023 · Short Film',
     systemsLabel: 'About the Work',
     noGithub: true,
@@ -172,6 +182,7 @@ const PROJECT_DATA = {
     ]
   },
   environment: {
+    summary: "Industrial corridors built in Unreal Engine.",
     tag: 'Design · 2024 · Unreal Engine 4',
     noGithub: true,
     gallery: ['images/E1.png'],
@@ -180,6 +191,7 @@ const PROJECT_DATA = {
     modes: []
   },
   recipe: {
+    summary: "Cook with ingredients you already have.",
     tag: 'Creative Computing · 2024 · OpenAI API',
     systemsLabel: 'Features',
     noGithub: false,
@@ -195,6 +207,7 @@ const PROJECT_DATA = {
     ]
   },
   pollution: {
+    summary: "Hear a city’s air quality.",
     tag: 'Creative Computing · 2025 · Max/MSP',
     systemsLabel: 'Sound Sources',
     noGithub: true,
@@ -211,6 +224,7 @@ const PROJECT_DATA = {
     ]
   },
   jukebox: {
+    summary: "Turn song titles into synth melodies.",
     tag: 'Creative Computing · 2025 · Max/MSP · OpenAI API',
     systemsLabel: 'Signal Chain',
     noGithub: true,
@@ -227,6 +241,7 @@ const PROJECT_DATA = {
     ]
   },
   soulslike: {
+    summary: "Dodge, strike, and face the boss.",
     tag: 'Game · 2025 · Unreal Engine 4',
     systemsLabel: 'Game Systems',
     noGithub: true,
@@ -649,6 +664,7 @@ document.querySelectorAll('.blob').forEach(blob => {
                   <div class="work-card-ghost">${n}</div>
                   <div class="work-card-body">
                     <div class="work-card-title">${w.title}</div>
+                    ${PROJECT_DATA[w.project]?.summary ? `<p class="work-card-summary">${PROJECT_DATA[w.project].summary}</p>` : ''}
                     ${w.status ? `<div class="work-status"><span class="work-status-badge"><span aria-hidden="true">✦</span> IN PROGRESS</span><span class="work-status-date">Expected completion · ${w.expected}</span></div>` : ''}
                     <div class="work-card-year">${w.year}</div>
                     <div class="work-card-cta">${w.play && w.play !== '#' ? 'Try prototype ↗' : 'View project ↗'}</div>

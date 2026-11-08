@@ -644,7 +644,7 @@ nav a:hover { opacity: .85; }
 .work-card.featured .work-card-body {
   flex: 1;
 }
-.work-card.featured .work-card-title { font-size: 20px; }
+.work-card.featured .work-card-title { font-size: clamp(26px, 2.6vw, 36px); line-height: 1.08; }
 .work-card.featured .work-card-cta {
   font-size: 10px;
   letter-spacing: .28em;
@@ -1486,3 +1486,13 @@ nav a:hover { opacity: .85; }
   .blob .blob-label { font-size: clamp(9px, 1.65vw, 12px); letter-spacing: .1em; opacity: .8; }
   .gallery-nav, .photo-nav { opacity: .85; }
 }
+
+.work-card-summary {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: rgba(255, 251, 240, .82);
+}
+.work-card .work-status { gap: 5px 12px; margin: 9px 0; }
+.work-card .work-status-badge { padding: 4px 8px; font-size: 10px; }
+.work-card .work-status-date { font-size: 13px; }
